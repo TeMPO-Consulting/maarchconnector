@@ -1,1 +1,1 @@
-# odoo_maarch
+Odoo module - interface with Maarch
