@@ -22,19 +22,23 @@ class MyBinary(Binary):
     def upload_attachment(self, callback, model, id, ufile):
         out = """<script language="javascript" type="text/javascript">
                     var win = window.top.window;
-                    win.jQuery(win).trigger(%s, %s).fadeIn(15500);
+                    win.jQuery(win).trigger(%s, %s);
                 </script>"""
+        with open('/tmp/testlog.txt', 'a') as f:
+            f.write("BEFORE : %s\n" % callback)
         try:
             self._add_to_maarch(base64.encodestring(ufile.read()), ufile.filename)
         except exceptions.ValidationError as e:
             args = {'error': str(e[1])}
             return out % (simplejson.dumps(callback), simplejson.dumps(args))
+        with open('/tmp/testlog.txt', 'a') as f:
+            f.write("AFTER : %s\n" % callback)
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):
         """
         Add the file into Maarch under the name "document_subject"
-        :param base64_encoded_content: file that will be added into Maarch
+        :param base64_encoded_content: content of the file encoded in base 64
         :param document_subject: file name
         :return:
         """

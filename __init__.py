@@ -1,2 +1,2 @@
-#import controllers  # TODO : uncomment later
+import controllers
 import models
