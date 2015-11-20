@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <!-- form view -->
+        <record id="configuration_form_view" model="ir.ui.view">
+            <field name="name">configuration.form</field>
+            <field name="model">odoo_maarch.configuration</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group col="12">
+                            <field name="name" colspan="12"/>
+                            <field name="server_address" colspan="12"
+                                   placeholder="exemple : http://www.monsite.com/maarch_entreprise/ ou http://102.12.34.56/maarch15"/>
+                        </group>
+                        <group col="12">
+                            <field name="maarch_user_login" colspan="6"/>
+                            <field name="maarch_user_password" password="True" colspan="6"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- search view -->
+        <record model="ir.ui.view" id="configuration_search_view">
+            <field name="name">configuration.search</field>
+            <field name="model">odoo_maarch.configuration</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- search by name or server address -->
+                    <field name="name"/>
+                    <field name="server_address"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- list view -->
+        <record model="ir.ui.view" id="configuration_tree_view">
+            <field name="name">configuration.tree</field>
+            <field name="model">odoo_maarch.configuration</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="server_address"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- window action : action opening a view or a set of views -->
+        <record model="ir.actions.act_window" id="configuration_list_action">
+            <field name="name">Connecteur Maarch</field> <!-- showed on top of the page -->
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">odoo_maarch.configuration</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="configuration_search_view" />
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Cliquez ici pour définir une nouvelle configuration
+                </p>
+            </field>
+        </record>
+
+        <!-- top level menu -->
+        <menuitem id="main_odoo_maarch_menu" sequence="200" name="Connecteur Maarch"/>
+        <!-- first level in the left side menu -->
+        <menuitem id="configuration_menu" name="Configuration"
+                  parent="main_odoo_maarch_menu"/>
+        <menuitem id="server_menu" name="Serveur Maarch" parent="configuration_menu"
+                  action="configuration_list_action"/>
+    </data>
+</openerp>
