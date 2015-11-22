@@ -11,7 +11,7 @@ from suds.client import Client
 from datetime import datetime
 
 # test URL & user
-_url_maarch = 'http://10.0.0.195/maarch15/ws_server.php?WSDL'
+_url_maarch = 'http://192.168.0.99/maarch15/ws_server.php?WSDL'
 _user_maarch = 'bblier'
 _password_maarch = 'maarch'
 
@@ -33,6 +33,8 @@ class MyBinary(Binary):
             return out % (simplejson.dumps(callback), simplejson.dumps(args))
         with open('/tmp/testlog.txt', 'a') as f:
             f.write("AFTER : %s\n" % callback)
+        # get back to the beginning of the file
+        ufile.seek(0);
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):

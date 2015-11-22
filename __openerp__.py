@@ -1,5 +1,5 @@
 {
-    'name' : "Module d'interface avec Odoo",
+    'name' : "Module d'interface avec Maarch",
     'depends' : ['document'],
     'data': [
         'views/odoo_maarch.xml'
