@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-
         <!-- form view -->
         <record id="configuration_form_view" model="ir.ui.view">
             <field name="name">configuration.form</field>
@@ -17,6 +16,9 @@
                         <group col="12">
                             <field name="maarch_user_login" colspan="6"/>
                             <field name="maarch_user_password" password="True" colspan="6"/>
+                        </group>
+                        <group col="12">
+                            <field name="activated"/>
                         </group>
                     </sheet>
                 </form>
@@ -41,9 +43,11 @@
             <field name="name">configuration.tree</field>
             <field name="model">odoo_maarch.configuration</field>
             <field name="arch" type="xml">
-                <tree>
+                <!-- not activated servers appear in grey -->
+                <tree colors="black:activated==True;grey:activated==False">
                     <field name="name"/>
                     <field name="server_address"/>
+                    <field name="activated"/>
                 </tree>
             </field>
         </record>

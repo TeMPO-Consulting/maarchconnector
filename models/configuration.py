@@ -13,6 +13,7 @@ class Configuration(models.Model):
                                  help="L'URL de la racine du serveur Maarch")
     maarch_user_login = fields.Char(string=u"Identifiant de l'utilisateur Maarch", required=True)
     maarch_user_password = fields.Char(string=u"Mot de passe", required=True)
+    activated = fields.Boolean(string=u"Activé", default=True)
 
     # check that the name is unique
     _sql_constraints = [
