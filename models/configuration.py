@@ -53,8 +53,17 @@ class Configuration(models.Model):
         active_configurations = self._count_activated_configuration()
         for r in self:
             if r.activated and active_configurations > 1:
-                raise exceptions.ValidationError("Une seule configuration peut être active")
+                raise exceptions.ValidationError("Vous ne pouvez activer qu'une seule configuration à la fois.")
 
+    def get_the_active_configuration(self):
+            """
+            :return: the active configuration if it exists, otherwise None
+            """
+            ret = None
+            configurations = self.search([('activated', '=', True)])
+            if configurations:
+                ret = configurations[0]
+            return ret
 
 
 
