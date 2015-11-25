@@ -22,8 +22,19 @@ class Configuration(models.Model):
          "Le nom de la configuration doit être unique."),
     ]
 
+    def _count_activated_configuration(self):
+        """
+        Get the number of active configurations
+        :return: how many configurations are activated (integer)
+        """
+        request = "SELECT COUNT(activated) FROM odoo_maarch_configuration WHERE activated IS TRUE;"
+        self.env.cr.execute(request)
+        result = self.env.cr.fetchall()
+        # convert the tuple "result[0]" into an integer
+        return int(''.join(str(x) for x in result[0]))
+
     @api.constrains('server_address')
-    def _server_address_format_validation(self):
+    def _validate_server_address_format(self):
         """
         Add "http://" to the server address if it hasn't been mentionned
         :return:
@@ -32,6 +43,16 @@ class Configuration(models.Model):
             if not re.search('^https?://', r.server_address):
                 r.server_address = 'http://%s' % r.server_address
 
-
+    @api.constrains('activated')
+    def _validate_active_configuration(self):
+        """
+        Checks that there is no more than one configuration active
+        :return:
+        """
+        # number of active configurations included the one we're working on
+        active_configurations = self._count_activated_configuration()
+        for r in self:
+            if r.activated and active_configurations > 1:
+                raise exceptions.ValidationError("Une seule configuration peut être active")
 
 
