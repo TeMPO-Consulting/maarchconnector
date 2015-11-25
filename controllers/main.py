@@ -3,6 +3,7 @@
 import openerp.addons.web.http as http
 from openerp.addons.web.controllers.main import Binary
 from openerp import exceptions
+from openerp.http import request
 import base64
 import simplejson
 import suds
@@ -10,42 +11,49 @@ import urllib2
 from suds.client import Client
 from datetime import datetime
 
-# test URL & user
-_url_maarch = 'http://192.168.0.99/maarch15/ws_server.php?WSDL'
-_user_maarch = 'bblier'
-_password_maarch = 'maarch'
-
 class MyBinary(Binary):
 
+    _url_maarch = ''
+    _user_maarch = ''
+    _password_maarch = ''
+
     @http.route()
-    # @serialize_exception
     def upload_attachment(self, callback, model, id, ufile):
+        """
+        Check if the Maarch server configuration is OK and call the _add_to_maarch method.
+        Display an appropriate message if the document can't be added into Maarch.
+        """
         out = """<script language="javascript" type="text/javascript">
                     var win = window.top.window;
                     win.jQuery(win).trigger(%s, %s);
                 </script>"""
-        with open('/tmp/testlog.txt', 'a') as f:
-            f.write("BEFORE : %s\n" % callback)
-        try:
-            self._add_to_maarch(base64.encodestring(ufile.read()), ufile.filename)
-        except exceptions.ValidationError as e:
-            args = {'error': str(e[1])}
-            return out % (simplejson.dumps(callback), simplejson.dumps(args))
-        with open('/tmp/testlog.txt', 'a') as f:
-            f.write("AFTER : %s\n" % callback)
-        # get back to the beginning of the file
-        ufile.seek(0);
+        configuration_model = request.registry[model]
+        active_conf = configuration_model.get_the_active_configuration(request.cr, request.uid, [])
+        if active_conf:
+            self._url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
+            self._user_maarch = active_conf.maarch_user_login
+            self._password_maarch = active_conf.maarch_user_password
+            try:
+                self._add_to_maarch(base64.encodestring(ufile.read()), ufile.filename)
+            except exceptions.ValidationError as e:
+                args = {'error': str(e[1])}
+                return out % (simplejson.dumps(callback), simplejson.dumps(args))
+            # get back to the beginning of the file
+            ufile.seek(0)
+        # TODO
+        # else:
+        #    display a message without stopping the process : "Aucun serveur Maarch n'est configuré."
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):
         """
         Add the file into Maarch under the name "document_subject"
         :param base64_encoded_content: content of the file encoded in base 64
-        :param document_subject: file name
+        :param document_subject: file name or subject
         :return:
         """
         try:
-            _client_maarch = Client(_url_maarch, username=_user_maarch, password=_password_maarch)
+            _client_maarch = Client(self._url_maarch, username=self._user_maarch, password=self._password_maarch)
             error = ''
             mydate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             # data relative to the document

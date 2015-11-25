@@ -55,6 +55,7 @@ class Configuration(models.Model):
             if r.activated and active_configurations > 1:
                 raise exceptions.ValidationError("Vous ne pouvez activer qu'une seule configuration à la fois.")
 
+    @api.multi
     def get_the_active_configuration(self):
             """
             :return: the active configuration if it exists, otherwise None
