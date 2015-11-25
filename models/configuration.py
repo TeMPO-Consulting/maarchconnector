@@ -29,9 +29,9 @@ class Configuration(models.Model):
         """
         request = "SELECT COUNT(activated) FROM odoo_maarch_configuration WHERE activated IS TRUE;"
         self.env.cr.execute(request)
-        result = self.env.cr.fetchall()
-        # convert the tuple "result[0]" into an integer
-        return int(''.join(str(x) for x in result[0]))
+        result = self.env.cr.fetchone()
+        # convert the tuple "result" into an integer
+        return int(''.join(str(x) for x in result))
 
     @api.constrains('server_address')
     def _validate_server_address_format(self):
@@ -54,5 +54,7 @@ class Configuration(models.Model):
         for r in self:
             if r.activated and active_configurations > 1:
                 raise exceptions.ValidationError("Une seule configuration peut être active")
+
+
 
 
