@@ -11,7 +11,7 @@
                         <group col="12">
                             <field name="name" colspan="12"/>
                             <field name="server_address" colspan="12"
-                                   placeholder="exemple : http://www.monsite.com/maarch_entreprise/ ou http://102.12.34.56/maarch15"/>
+                                   placeholder="exemples : http://www.monsite.com/maarch_entreprise/ ou http://102.12.34.56/maarch15"/>
                         </group>
                         <group col="12">
                             <field name="maarch_user_login" colspan="6"/>
@@ -77,5 +77,32 @@
                   parent="main_odoo_maarch_menu"/>
         <menuitem id="server_menu" name="Serveur Maarch" parent="configuration_menu"
                   action="configuration_list_action"/>
+
+        <!-- wizard -->
+        <!-- TODO -->
+        <record model="ir.ui.view" id="wizard_form_view">
+            <field name="name">wizard.form</field>
+            <field name="model">odoo_maarch.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Ajout du document">
+                    <group>
+                        <field name="filesubject"/>
+                    </group>
+                    <footer>
+                        <button name="get_filesubject" type="object"
+                                string="valider" class="oe_highlight"/>
+                        ou
+                        <button special="cancel" string="annuler"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="document_registration_wizard"
+                    name="Ajout du document"
+                    src_model="odoo_maarch.configuration"
+                    res_model="odoo_maarch.wizard"
+                    view_mode="form"
+                    target="new"/>
     </data>
 </openerp>

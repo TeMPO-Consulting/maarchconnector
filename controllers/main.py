@@ -11,6 +11,7 @@ import urllib2
 from suds.client import Client
 from datetime import datetime
 
+
 class MyBinary(Binary):
 
     _url_maarch = ''
@@ -22,6 +23,10 @@ class MyBinary(Binary):
         """
         Check if the Maarch server configuration is OK and call the _add_to_maarch method.
         Display an appropriate message if the document can't be added into Maarch.
+        :param callback
+        :param model : model name
+        :param id
+        :param ufile : file that has to be added into Odoo and Maarch
         """
         out = """<script language="javascript" type="text/javascript">
                     var win = window.top.window;
@@ -79,12 +84,13 @@ class MyBinary(Binary):
             data.datas.append(type_id)
             data.datas.append(subject)
             # call to the web service method
-            _client_maarch.service.storeResource(base64_encoded_content, data, 'letterbox_coll', 'res_letterbox', 'pdf', 'INIT')
+            _client_maarch.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
+                                                 'res_letterbox', 'pdf', 'INIT')
         except urllib2.URLError:
             error = "l'URL de connexion est incorrecte, ou le serveur est indisponible."
         except suds.transport.TransportError:
-            error = "les identifiants de connexion fournis sont incorrects."
-        except:
+            error = "connexion impossible. Vérifiez l'URL et les identifiants de connexion fournis."
+        except Exception:
             error = "une erreur est survenue lors du traitement."
         if error:
             raise exceptions.ValidationError("La pièce jointe ne peut pas être enregistrée dans Maarch : %s" % error)

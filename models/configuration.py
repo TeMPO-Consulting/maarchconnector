@@ -3,6 +3,7 @@
 from openerp import models, fields, api, exceptions
 import re
 
+
 class Configuration(models.Model):
 
     _name = 'odoo_maarch.configuration'
@@ -53,7 +54,7 @@ class Configuration(models.Model):
         active_configurations = self._count_activated_configuration()
         for r in self:
             if r.activated and active_configurations > 1:
-                raise exceptions.ValidationError("Vous ne pouvez activer qu'une seule configuration à la fois.")
+                raise exceptions.ValidationError("Vous ne pouvez activer qu'un seul serveur Maarch à la fois.")
 
     @api.multi
     def get_the_active_configuration(self):
