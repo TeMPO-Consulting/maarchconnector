@@ -41,7 +41,7 @@ class MyBinary(Binary):
             try:
                 self._add_to_maarch(base64.encodestring(ufile.read()), ufile.filename)
             except exceptions.ValidationError as e:
-                args = {'error': str(e[1])}
+                args = {'error': str(e[1]), 'maarchError': True}
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
             # get back to the beginning of the file
             ufile.seek(0)
