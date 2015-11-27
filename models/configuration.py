@@ -20,7 +20,7 @@ class Configuration(models.Model):
     _sql_constraints = [
         ('name_unique',
          'UNIQUE(name)',
-         "Le nom de la configuration doit être unique."),
+         "Le nom choisi doit être unique."),
     ]
 
     def _count_activated_configuration(self):

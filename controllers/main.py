@@ -87,11 +87,11 @@ class MyBinary(Binary):
             _client_maarch.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
                                                  'res_letterbox', 'pdf', 'INIT')
         except urllib2.URLError:
-            error = "l'URL de connexion est incorrecte, ou le serveur est indisponible."
+            error = "accès au serveur impossible.<br/>L'adresse fournie est incorrecte, ou le serveur est indisponible."
         except suds.transport.TransportError:
-            error = "connexion impossible. Vérifiez l'URL et les identifiants de connexion fournis."
+            error = "connexion impossible.<br/>Vérifiez l'URL et les identifiants de connexion fournis."
         except Exception:
             error = "une erreur est survenue lors du traitement."
         if error:
-            raise exceptions.ValidationError("La pièce jointe ne peut pas être enregistrée dans Maarch : %s" % error)
+            raise exceptions.ValidationError("La pièce jointe ne peut pas être enregistrée dans Maarch&nbsp: %s" % error)
 

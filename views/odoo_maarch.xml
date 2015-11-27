@@ -11,7 +11,7 @@
                         <group col="12">
                             <field name="name" colspan="12"/>
                             <field name="server_address" colspan="12"
-                                   placeholder="exemples : http://www.monsite.com/maarch_entreprise/ ou http://102.12.34.56/maarch15"/>
+                                   placeholder="exemples : http://www.monsite.com/maarch_entreprise/ ou http://102.34.56.78/maarch15"/>
                         </group>
                         <group col="12">
                             <field name="maarch_user_login" colspan="6"/>
