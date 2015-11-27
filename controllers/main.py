@@ -45,9 +45,6 @@ class MyBinary(Binary):
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
             # get back to the beginning of the file
             ufile.seek(0)
-        # TODO
-        # else:
-        #    display a message without stopping the process : "Aucun serveur Maarch n'est configuré."
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):

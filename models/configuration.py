@@ -23,7 +23,7 @@ class Configuration(models.Model):
          "Le nom choisi doit être unique."),
     ]
 
-    def _count_activated_configuration(self):
+    def _count_activated_configurations(self):
         """
         Get the number of active configurations
         :return: how many configurations are activated (integer)
@@ -51,9 +51,9 @@ class Configuration(models.Model):
         :return:
         """
         # number of active configurations included the one we're working on
-        active_configurations = self._count_activated_configuration()
+        nb_active_configurations = self._count_activated_configurations()
         for r in self:
-            if r.activated and active_configurations > 1:
+            if r.activated and nb_active_configurations > 1:
                 raise exceptions.ValidationError("Vous ne pouvez activer qu'un seul serveur Maarch à la fois.")
 
     @api.multi
@@ -66,6 +66,30 @@ class Configuration(models.Model):
             if configurations:
                 ret = configurations[0]
             return ret
+
+    @api.onchange('activated')
+    def _onchange_activated_configuration(self):
+        """
+        Display a warning message when no Maarch server is activated
+        :return:
+        """
+        nb_active_configurations = self._count_activated_configurations()
+        active_configuration = self.get_the_active_configuration()
+        actual_record_id = self._origin.id
+
+        # a warning message is displayed when "activated" isn't checked AND :
+        # - either no other configuration was activated
+        # - or the activated configuration was the one we're working on
+        if (not self.activated) and \
+            (nb_active_configurations == 0 or
+                (active_configuration and active_configuration.id == actual_record_id)):
+                    return {
+                        'warning': {
+                            'title': "Aucun serveur Maarch activé",
+                            'message': "Les pièces jointes ne seront pas enregistrées dans Maarch "
+                                       "si aucun serveur n'est activé.",
+                        },
+                    }
 
 
 
