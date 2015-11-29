@@ -6,7 +6,7 @@ import re
 
 class Configuration(models.Model):
 
-    _name = 'odoo_maarch.configuration'
+    _name = 'maarchconnector.configuration'
 
     # "u" for unicode
     name = fields.Char(string=u"Nom", required=True)  # "name" required for search behaviors
@@ -28,7 +28,7 @@ class Configuration(models.Model):
         Get the number of active configurations
         :return: how many configurations are activated (integer)
         """
-        request = "SELECT COUNT(activated) FROM odoo_maarch_configuration WHERE activated IS TRUE;"
+        request = "SELECT COUNT(activated) FROM maarchconnector_configuration WHERE activated IS TRUE;"
         self.env.cr.execute(request)
         result = self.env.cr.fetchone()
         # convert the tuple "result" into an integer

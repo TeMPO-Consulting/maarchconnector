@@ -4,7 +4,7 @@ from openerp import models, fields, api
 
 
 class Wizard(models.TransientModel):
-    _name = 'odoo_maarch.wizard'
+    _name = 'maarchconnector.wizard'
 
     filesubject = fields.Char(string=u"Objet du document dans Maarch", required=True)
 

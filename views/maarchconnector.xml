@@ -4,7 +4,7 @@
         <!-- form view -->
         <record id="configuration_form_view" model="ir.ui.view">
             <field name="name">configuration.form</field>
-            <field name="model">odoo_maarch.configuration</field>
+            <field name="model">maarchconnector.configuration</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
@@ -28,7 +28,7 @@
         <!-- search view -->
         <record model="ir.ui.view" id="configuration_search_view">
             <field name="name">configuration.search</field>
-            <field name="model">odoo_maarch.configuration</field>
+            <field name="model">maarchconnector.configuration</field>
             <field name="arch" type="xml">
                 <search>
                     <!-- search by name or server address -->
@@ -41,7 +41,7 @@
         <!-- list view -->
         <record model="ir.ui.view" id="configuration_tree_view">
             <field name="name">configuration.tree</field>
-            <field name="model">odoo_maarch.configuration</field>
+            <field name="model">maarchconnector.configuration</field>
             <field name="arch" type="xml">
                 <!-- not activated servers appear in grey -->
                 <tree colors="black:activated==True;grey:activated==False">
@@ -56,7 +56,7 @@
         <record model="ir.actions.act_window" id="configuration_list_action">
             <field name="name">Connecteur Maarch</field> <!-- showed on top of the page -->
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">odoo_maarch.configuration</field>
+            <field name="res_model">maarchconnector.configuration</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="configuration_search_view" />
@@ -71,10 +71,10 @@
         </record>
 
         <!-- top level menu -->
-        <menuitem id="main_odoo_maarch_menu" sequence="200" name="Connecteur Maarch"/>
+        <menuitem id="main_maarchconnector_menu" sequence="200" name="Connecteur Maarch"/>
         <!-- first level in the left side menu -->
         <menuitem id="configuration_menu" name="Configuration"
-                  parent="main_odoo_maarch_menu"/>
+                  parent="main_maarchconnector_menu"/>
         <menuitem id="server_menu" name="Serveur Maarch" parent="configuration_menu"
                   action="configuration_list_action"/>
 
@@ -82,7 +82,7 @@
         <!-- TODO -->
         <record model="ir.ui.view" id="wizard_form_view">
             <field name="name">wizard.form</field>
-            <field name="model">odoo_maarch.wizard</field>
+            <field name="model">maarchconnector.wizard</field>
             <field name="arch" type="xml">
                 <form string="Ajout du document">
                     <group>
@@ -100,8 +100,8 @@
 
         <act_window id="document_registration_wizard"
                     name="Ajout du document"
-                    src_model="odoo_maarch.configuration"
-                    res_model="odoo_maarch.wizard"
+                    src_model="maarchconnector.configuration"
+                    res_model="maarchconnector.wizard"
                     view_mode="form"
                     target="new"/>
     </data>
