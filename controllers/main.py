@@ -32,8 +32,9 @@ class MyBinary(Binary):
                     var win = window.top.window;
                     win.jQuery(win).trigger(%s, %s);
                 </script>"""
-        configuration_model = request.registry[model]
+        configuration_model = request.registry["maarchconnector.configuration"]
         active_conf = configuration_model.get_the_active_configuration(request.cr, request.uid, [])
+
         if active_conf:
             self._url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
             self._user_maarch = active_conf.maarch_user_login
