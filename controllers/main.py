@@ -17,6 +17,7 @@ class MyBinary(Binary):
     _url_maarch = ''
     _user_maarch = ''
     _password_maarch = ''
+    _filesubject_in_maarch = ''
 
     @http.route()
     def upload_attachment(self, callback, model, id, ufile):
@@ -32,21 +33,42 @@ class MyBinary(Binary):
                     var win = window.top.window;
                     win.jQuery(win).trigger(%s, %s);
                 </script>"""
-        configuration_model = request.registry["maarchconnector.configuration"]
-        active_conf = configuration_model.get_the_active_configuration(request.cr, request.uid, [])
 
-        if active_conf:
-            self._url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
-            self._user_maarch = active_conf.maarch_user_login
-            self._password_maarch = active_conf.maarch_user_password
+        if self.get_the_active_conf().get('is_conf_active'):
             try:
-                self._add_to_maarch(base64.encodestring(ufile.read()), ufile.filename)
+                self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch)
             except exceptions.ValidationError as e:
                 args = {'error': str(e[1]), 'maarchError': True}
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
             # get back to the beginning of the file
             ufile.seek(0)
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
+
+    @http.route('/tempo/maarchconnector/get_the_active_conf', type='json', auth='user')
+    def get_the_active_conf(self):
+        """
+        Indicate if a Maarch configuration is active. If so, get the corresponding datas.
+        """
+        configuration_model = request.registry["maarchconnector.configuration"]
+        active_conf = configuration_model.get_the_active_configuration(request.cr, request.uid, [])
+        is_conf_active = False
+        if active_conf:
+            self._url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
+            self._user_maarch = active_conf.maarch_user_login
+            self._password_maarch = active_conf.maarch_user_password
+            is_conf_active = True
+        return {'is_conf_active': is_conf_active}
+
+    @http.route('/tempo/maarchconnector/set_subject', type='json', auth='none')
+    def set_subject(self, subject):
+        """
+        Set the subject for the file to be registered in Maarch
+        :param subject:
+        :return:
+        """
+        self._filesubject_in_maarch = subject
+        #return {}
+
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):
         """
