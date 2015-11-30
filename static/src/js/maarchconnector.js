@@ -20,13 +20,12 @@
         },
 
         on_attachment_changed: function(e) {
-
             instance.session.rpc('/tempo/maarchconnector/get_the_active_conf', {
             }).done(function (result) {
                 if(result.is_conf_active)
                 {
-                    // if a Maarch conf is active, ask for the file subject in Maarch
-                    filesubject = prompt("Objet du document à enregistrer dans Maarch : ");
+                    // if a Maarch conf is active, ask for the file subject in Maarch (by defaut : filename)
+                    filesubject = prompt("Objet du document à enregistrer dans Maarch : ", e.target.value);
                     instance.session.rpc('/tempo/maarchconnector/set_subject', {
                         subject : filesubject
                     });

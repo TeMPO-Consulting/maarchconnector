@@ -36,7 +36,7 @@ class MyBinary(Binary):
 
         if self.get_the_active_conf().get('is_conf_active'):
             try:
-                # if the user hasnt't mentionned any subject we use the filename
+                # if the user hasn't mentionned any subject we use the filename
                 if not self._filesubject_in_maarch:
                     self._filesubject_in_maarch = ufile.filename
                 self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch)
