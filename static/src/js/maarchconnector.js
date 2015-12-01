@@ -5,7 +5,9 @@
        _lt = instance.web._lt;
     var QWeb = instance.web.qweb;
 
-    var filesubject = ''
+    var filesubject = '';
+    //var flagProcessOneFinished = false;
+    //var flagProcessTwoFinished = false;
 
     instance.web.Sidebar.include({
 
@@ -30,11 +32,36 @@
                         subject : filesubject
                     });
                 }
+                //flagProcessOneFinished = true;
+                //this._super(e); // "this" isn't bind to the right context...
             });
+
+            // TODO : debug here
+            /*
+            // this._super(e) must be called once the subject is set
+            while(!flagProcessTwoFinished)
+            {
+                if(!flagProcessOneFinished)
+                {
+                    sleep(30000);
+                }
+                else
+                {
+                    flagProcessTwoFinished = true;
+                    this._super(e);
+                }
+            }
+            */
 
             this._super(e);
         }
 
     });
+
+    // wait for x milliseconds
+    function sleep(milliseconds){
+        var startTime = new Date().getTime();
+        while (new Date().getTime() < startTime + milliseconds);
+    }
 
 })();
