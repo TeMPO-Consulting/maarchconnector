@@ -36,9 +36,15 @@ class MyBinary(Binary):
 
         if self.get_the_active_conf().get('is_conf_active'):
             try:
-                # if the user hasn't mentionned any subject we use the filename
                 if not self._filesubject_in_maarch:
-                    self._filesubject_in_maarch = ufile.filename
+                    # if the user hasn't mentionned any subject we use the filename
+                    if self._filesubject_in_maarch == "":
+                        self._filesubject_in_maarch = ufile.filename
+                    # if the user has clicked on "cancel" we abort the process
+                    else:
+                        args = {'error': "La pièce jointe n'a pas été enregistrée dans Maarch ni dans Odoo.",
+                                'maarchError': True}
+                        return out % (simplejson.dumps(callback), simplejson.dumps(args))
                 self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch)
             except exceptions.ValidationError as e:
                 args = {'error': str(e[1]), 'maarchError': True}
