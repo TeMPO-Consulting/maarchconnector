@@ -76,7 +76,6 @@ class MyBinary(Binary):
         :return:
         """
         self._filesubject_in_maarch = subject
-        #return {}
 
 
     def _add_to_maarch(self, base64_encoded_content, document_subject):

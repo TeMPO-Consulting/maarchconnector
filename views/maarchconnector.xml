@@ -78,31 +78,5 @@
         <menuitem id="server_menu" name="Serveur Maarch" parent="configuration_menu"
                   action="configuration_list_action"/>
 
-        <!-- wizard -->
-        <!-- TODO -->
-        <record model="ir.ui.view" id="wizard_form_view">
-            <field name="name">wizard.form</field>
-            <field name="model">maarchconnector.wizard</field>
-            <field name="arch" type="xml">
-                <form string="Ajout du document">
-                    <group>
-                        <field name="filesubject"/>
-                    </group>
-                    <footer>
-                        <button name="get_filesubject" type="object"
-                                string="valider" class="oe_highlight"/>
-                        ou
-                        <button special="cancel" string="annuler"/>
-                    </footer>
-                </form>
-            </field>
-        </record>
-
-        <act_window id="document_registration_wizard"
-                    name="Ajout du document"
-                    src_model="maarchconnector.configuration"
-                    res_model="maarchconnector.wizard"
-                    view_mode="form"
-                    target="new"/>
     </data>
 </openerp>
