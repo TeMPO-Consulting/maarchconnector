@@ -16,7 +16,7 @@
             self.$el.find('.oe_sidebar_add_attachment').after(QWeb.render('AddDocFromMaarch', {widget: self}))
 
             self.$el.find('.oe_sidebar_add_maarch_doc').on('click', function (e) {
-                // TODO
+                self.on_maarch_doc();
             });
         },
 
@@ -50,6 +50,40 @@
             });
         },
 
+        on_maarch_doc: function() {
+            // method called on click on "Add from Maarch..."
+            // TODO : clean the commented code
+            var self = this;
+            var view = self.getParent();
+            //var ids = ( view.fields_view.type != "form" )? view.groups.get_selection().ids : [ view.datarecord.id ];
+            //var ds = new instance.web.DataSet(this, 'ir.attachment', context);
+            /*
+            var context = {
+                'model': view.dataset.model,
+                'ids': ids,
+            };
+            */
+            // used to send data to the "do_action" method
+            var action = {
+                name: "Recherche d'un document dans Maarch",
+                type: 'ir.actions.act_window',
+                res_model: 'maarchconnector.wizard',
+                view_mode: 'form',
+                view_type: 'form',
+                views: [[false, 'form']],
+                target: 'new',
+                //context: context,
+            };
+            // used to open the new view
+            self.do_action(action, {
+                // refresh list of documents
+                /*
+                on_close: function () {
+                    self.do_attachement_update(self.dataset, self.model_id);
+                }
+                */
+            });
+        }
     });
 
 })();

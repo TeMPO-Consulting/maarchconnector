@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_form_view">
+            <field name="name">wizard.form</field>
+            <field name="model">maarchconnector.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="filesubject"/>
+                    </group>
+                    <footer>
+                        <button name="search_files" type="object"
+                                string="valider" class="oe_highlight"/>
+                        ou
+                        <button special="cancel" string="annuler"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

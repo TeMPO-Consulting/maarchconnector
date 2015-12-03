@@ -4,6 +4,7 @@
     'data': [
         'views/maarchconnector.xml',
         'views/maarchconnector_assets.xml',
+        'wizard/maarchconnector_wizard_view.xml',
     ],
     'js': [
         'static/src/js/maarchconnector.js'
