@@ -24,7 +24,7 @@
                     </field>
 
                     <footer>
-                        <button name="search_files" type="object"
+                        <button name="validate" type="object"
                                 string="valider" class="oe_highlight"/>
                         ou
                         <button special="cancel" string="annuler"/>

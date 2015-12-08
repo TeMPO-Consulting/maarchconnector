@@ -11,7 +11,7 @@ class Wizard(models.TransientModel):
     document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
 
     @api.multi
-    def search_files(self):
+    def validate(self):
         # TODO
         """
         return {
@@ -36,10 +36,9 @@ class Wizard(models.TransientModel):
         param = _client_maarch.factory.create('customizedSearchParams')
         param.subject = self.filesubject
         response = _client_maarch.service.customizedSearchResources(param)
+        final_docs_list = []
         if response:
             docslist = response[0]
-
-            final_docs_list = []
             for doc in docslist:
                 result = {}
                 result.update({'maarch_id': doc.res_id})
@@ -47,7 +46,7 @@ class Wizard(models.TransientModel):
                 final_docs_list.append(result)
             with open('/tmp/testlog.txt', 'a') as f:
                 f.write("final_docs_list : %s\n" % final_docs_list)
-            self.document_ids = final_docs_list
+        self.document_ids = final_docs_list
 
 
 class DocumentWizard(models.TransientModel):
