@@ -20,6 +20,7 @@
                         <tree create="false" delete="false" editable="false">
                             <field name="maarch_id"/>
                             <field name="subject"/>
+                            <field name="doc_date"/>
                         </tree>
                     </field>
 

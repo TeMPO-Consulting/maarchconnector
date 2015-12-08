@@ -7,7 +7,7 @@ from suds.client import Client
 class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
-    filesubject = fields.Char(string=u"Objet du document", required=True)
+    filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
 
     @api.multi
@@ -45,12 +45,14 @@ class Wizard(models.TransientModel):
                     result = {}
                     result.update({'maarch_id': doc.res_id})
                     result.update({'subject': doc.subject.encode('utf8')})
+                    result.update({'doc_date': doc.doc_date})
                     final_docs_list.append(result)
             # if there is exactly one result we get directly the document instance
             else:
                 result = {}
                 result.update({'maarch_id': maarchdoc.res_id})
                 result.update({'subject': maarchdoc.subject.encode('utf8')})
+                result.update({'doc_date': maarchdoc.doc_date})
                 final_docs_list.append(result)
         self.document_ids = final_docs_list
 
@@ -58,7 +60,8 @@ class Wizard(models.TransientModel):
 class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
 
-    maarch_id = fields.Char(string="id", readonly=True)
-    subject = fields.Char(string=u"Objet", readonly=True)
+    maarch_id = fields.Char(string=u"id", readonly=True)
+    subject = fields.Char(string=u"objet", readonly=True)
+    doc_date = fields.Date(string=u"date", readonly=True)
     document_id = fields.Many2one('maarch.wizard')
 
