@@ -67,7 +67,7 @@
             var action = {
                 name: "Recherche d'un document dans Maarch",
                 type: 'ir.actions.act_window',
-                res_model: 'maarchconnector.wizard',
+                res_model: 'maarch.wizard',
                 view_mode: 'form',
                 view_type: 'form',
                 views: [[false, 'form']],

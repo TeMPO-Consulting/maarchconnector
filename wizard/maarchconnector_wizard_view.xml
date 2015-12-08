@@ -3,12 +3,27 @@
     <data>
         <record model="ir.ui.view" id="wizard_form_view">
             <field name="name">wizard.form</field>
-            <field name="model">maarchconnector.wizard</field>
+            <field name="model">maarch.wizard</field>
             <field name="arch" type="xml">
                 <form>
                     <group>
                         <field name="filesubject"/>
                     </group>
+
+                    <html>
+                        <!-- do not show the "add" link in the tree view -->
+                        <style>
+                            .openerp .oe_form_field_many2many_list_row_add { display:none }
+                        </style>
+                    </html>
+                    <label for="document_ids"/>
+                    <field name="document_ids">
+                        <tree create="false" delete="false" editable="false">
+                            <field name="id"/>
+                            <field name="subject"/>
+                        </tree>
+                    </field>
+
                     <footer>
                         <button name="search_files" type="object"
                                 string="valider" class="oe_highlight"/>
