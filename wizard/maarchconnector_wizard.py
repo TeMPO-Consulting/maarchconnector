@@ -11,7 +11,7 @@ class Wizard(models.TransientModel):
     document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
 
     @api.multi
-    def validate(self):
+    def add_maarchdoc_in_odoo(self):
         # TODO
         """
         return {
@@ -38,14 +38,20 @@ class Wizard(models.TransientModel):
         response = _client_maarch.service.customizedSearchResources(param)
         final_docs_list = []
         if response:
-            docslist = response[0]
-            for doc in docslist:
+            maarchdoc = response[0]
+            # if there is more than 1 result we handle a list
+            if isinstance(maarchdoc, list):
+                for doc in maarchdoc:
+                    result = {}
+                    result.update({'maarch_id': doc.res_id})
+                    result.update({'subject': doc.subject.encode('utf8')})
+                    final_docs_list.append(result)
+            # if there is exactly one result we get directly the document instance
+            else:
                 result = {}
-                result.update({'maarch_id': doc.res_id})
-                result.update({'subject': doc.subject.encode('utf8')})
+                result.update({'maarch_id': maarchdoc.res_id})
+                result.update({'subject': maarchdoc.subject.encode('utf8')})
                 final_docs_list.append(result)
-            with open('/tmp/testlog.txt', 'a') as f:
-                f.write("final_docs_list : %s\n" % final_docs_list)
         self.document_ids = final_docs_list
 
 

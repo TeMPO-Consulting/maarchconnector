@@ -24,8 +24,8 @@
                     </field>
 
                     <footer>
-                        <button name="validate" type="object"
-                                string="valider" class="oe_highlight"/>
+                        <button name="add_maarchdoc_in_odoo" type="object"
+                                string="ajouter" class="oe_highlight"/>
                         ou
                         <button special="cancel" string="annuler"/>
                     </footer>
