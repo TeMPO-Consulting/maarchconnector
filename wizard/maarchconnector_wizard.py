@@ -8,24 +8,12 @@ class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
     filesubject = fields.Char(string=u"Objet du document", required=True)
-    document_ids = fields.Many2many('maarch.document', string=u"Documents")
+    document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
 
     @api.multi
     def search_files(self):
-
-        # TODO : replace the test data
-        _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
-
-        param = _client_maarch.factory.create('customizedSearchParams')
-        param.subject = self.filesubject
-        response = _client_maarch.service.customizedSearchResources(param)
-
-        if response:
-            docslist = response[0]
-            with open('/tmp/testlog.txt', 'a') as f:
-                for doc in docslist:
-                    f.write("filesubject : %s\n" % doc.subject.encode('utf8'))
-
+        # TODO
+        """
         return {
             'name': 'Recherche d\'un document dans Maarch',
             'type': 'ir.actions.act_window',
@@ -36,6 +24,30 @@ class Wizard(models.TransientModel):
             'views': [(False, 'form')],
             'target': 'new',
         }
+        """
+
+    @api.onchange('filesubject')
+    # @api.constrains('filesubject')
+    def on_filesubject_change(self):
+
+        # TODO : replace the test data
+        _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
+
+        param = _client_maarch.factory.create('customizedSearchParams')
+        param.subject = self.filesubject
+        response = _client_maarch.service.customizedSearchResources(param)
+        if response:
+            docslist = response[0]
+
+            final_docs_list = []
+            for doc in docslist:
+                result = {}
+                #result.update({'id': doc.res_id})
+                result.update({'subject': doc.subject.encode('utf8')})
+                final_docs_list.append(result)
+            with open('/tmp/testlog.txt', 'a') as f:
+                f.write("final_docs_list : %s\n" % final_docs_list)
+            self.document_ids = final_docs_list
 
 
 class DocumentWizard(models.TransientModel):
@@ -43,4 +55,5 @@ class DocumentWizard(models.TransientModel):
 
     id = fields.Char(readonly=True)
     subject = fields.Char(string=u"Objet", readonly=True)
+    document_id = fields.Many2one('maarch.wizard')
 

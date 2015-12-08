@@ -9,7 +9,6 @@
                     <group>
                         <field name="filesubject"/>
                     </group>
-
                     <html>
                         <!-- do not show the "add" link in the tree view -->
                         <style>
