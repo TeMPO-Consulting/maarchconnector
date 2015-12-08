@@ -42,7 +42,7 @@ class Wizard(models.TransientModel):
             final_docs_list = []
             for doc in docslist:
                 result = {}
-                #result.update({'id': doc.res_id})
+                result.update({'maarch_id': doc.res_id})
                 result.update({'subject': doc.subject.encode('utf8')})
                 final_docs_list.append(result)
             with open('/tmp/testlog.txt', 'a') as f:
@@ -53,7 +53,7 @@ class Wizard(models.TransientModel):
 class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
 
-    id = fields.Char(readonly=True)
+    maarch_id = fields.Char(string="id", readonly=True)
     subject = fields.Char(string=u"Objet", readonly=True)
     document_id = fields.Many2one('maarch.wizard')
 

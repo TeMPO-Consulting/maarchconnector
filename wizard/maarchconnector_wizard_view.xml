@@ -18,7 +18,7 @@
                     <label for="document_ids"/>
                     <field name="document_ids">
                         <tree create="false" delete="false" editable="false">
-                            <field name="id"/>
+                            <field name="maarch_id"/>
                             <field name="subject"/>
                         </tree>
                     </field>
