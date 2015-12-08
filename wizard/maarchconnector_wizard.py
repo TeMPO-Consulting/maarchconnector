@@ -36,26 +36,30 @@ class Wizard(models.TransientModel):
         param = _client_maarch.factory.create('customizedSearchParams')
         param.subject = self.filesubject
         response = _client_maarch.service.customizedSearchResources(param)
-        final_docs_list = []
+        doclist = []
         if response:
             maarchdoc = response[0]
             # if there is more than 1 result we handle a list
             if isinstance(maarchdoc, list):
                 for doc in maarchdoc:
-                    result = {}
-                    result.update({'maarch_id': doc.res_id})
-                    result.update({'subject': doc.subject.encode('utf8')})
-                    result.update({'doc_date': doc.doc_date})
-                    final_docs_list.append(result)
+                    self._treeview_line_construction(doc, doclist)
             # if there is exactly one result we get directly the document instance
             else:
-                result = {}
-                result.update({'maarch_id': maarchdoc.res_id})
-                result.update({'subject': maarchdoc.subject.encode('utf8')})
-                result.update({'doc_date': maarchdoc.doc_date})
-                final_docs_list.append(result)
-        self.document_ids = final_docs_list
+                self._treeview_line_construction(maarchdoc, doclist)
+        self.document_ids = doclist
 
+    def _treeview_line_construction(self, doc, doclist):
+        """
+        Construct one line in the tree view
+        :param doc: the document to add in the list
+        :param doclist: the list used to populate the tree view
+        :return:
+        """
+        result = {}
+        result.update({'maarch_id': doc.res_id})
+        result.update({'subject': doc.subject.encode('utf8')})
+        result.update({'doc_date': doc.doc_date})
+        doclist.append(result)
 
 class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
