@@ -11,31 +11,13 @@ class Wizard(models.TransientModel):
     document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
 
     @api.multi
-    def add_maarchdoc_in_odoo(self):
-        # TODO
-        """
-        return {
-            'name': 'Recherche d\'un document dans Maarch',
-            'type': 'ir.actions.act_window',
-            'res_model': 'maarch.wizard',
-            'view_mode': 'form',
-            'view_type': 'form',
-            # 'res_id': this.id,
-            'views': [(False, 'form')],
-            'target': 'new',
-        }
-        """
-
-    @api.onchange('filesubject')
-    # @api.constrains('filesubject')
-    def on_filesubject_change(self):
-
+    def search_docs(self):
         # TODO : replace the test data
         _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
-
         param = _client_maarch.factory.create('customizedSearchParams')
         param.subject = self.filesubject
         response = _client_maarch.service.customizedSearchResources(param)
+        self.document_ids = None  # empty the result list in case the wizard has been reloaded
         doclist = []
         if response:
             maarchdoc = response[0]
@@ -47,6 +29,16 @@ class Wizard(models.TransientModel):
             else:
                 self._treeview_line_construction(maarchdoc, doclist)
         self.document_ids = doclist
+        return {
+            'name': 'Recherche d\'un document dans Maarch',
+            'type': 'ir.actions.act_window',
+            'res_model': 'maarch.wizard',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': self.id,  # reload the same wizard
+            'views': [(False, 'form')],
+            'target': 'new',
+        }
 
     def _treeview_line_construction(self, doc, doclist):
         """

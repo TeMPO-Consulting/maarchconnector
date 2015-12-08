@@ -7,7 +7,13 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <field name="filesubject"/>
+                        <group col="6">
+                            <field name="filesubject"/>
+                        </group>
+                        <group col="6">
+                            <button name="search_docs" type="object"
+                                    string="rechercher" class="oe_highlight"/>
+                        </group>
                     </group>
                     <html>
                         <!-- do not show the "add" link in the tree view -->
