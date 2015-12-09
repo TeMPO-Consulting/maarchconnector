@@ -22,7 +22,8 @@
                         </style>
                     </html>
                     <label for="document_ids"/>
-                    <field name="document_ids">
+                    <!-- the one2many widget makes the view looks like in a one2many case (columns are sortable...) -->
+                    <field name="document_ids" widget="one2many">
                         <tree create="false" delete="false" editable="false">
                             <field name="maarch_id"/>
                             <field name="subject"/>

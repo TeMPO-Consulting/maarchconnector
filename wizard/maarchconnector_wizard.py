@@ -8,7 +8,7 @@ class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
-    document_ids = fields.One2many('maarch.document', 'document_id', string=u"Documents")
+    document_ids = fields.Many2many('maarch.document', string=u"Documents")
 
     @api.multi
     def search_docs(self):
@@ -59,5 +59,4 @@ class DocumentWizard(models.TransientModel):
     maarch_id = fields.Char(string=u"id", readonly=True)
     subject = fields.Char(string=u"objet", readonly=True)
     doc_date = fields.Date(string=u"date", readonly=True)
-    document_id = fields.Many2one('maarch.wizard')
 
