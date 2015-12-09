@@ -15,24 +15,21 @@
                                     string="rechercher" class="oe_highlight"/>
                         </group>
                     </group>
-                    <html>
-                        <!-- do not show the "add" link in the tree view -->
-                        <style>
-                            .openerp .oe_form_field_many2many_list_row_add { display:none }
-                        </style>
-                    </html>
                     <label for="document_ids"/>
                     <!-- the one2many widget makes the view looks like in a one2many case (columns are sortable...) -->
-                    <field name="document_ids" widget="one2many">
-                        <tree create="false" delete="false" editable="false">
-                            <field name="maarch_id"/>
+                    <!-- "no_create" hides the "add" link in the tree view -->
+                    <field name="document_ids" widget="one2many" options="{'no_create': True}">
+                        <tree create="false" delete="false" editable="false"
+                              colors="black:to_add==True;grey:to_add==False">
+                            <field name="to_add"/>
+                            <field name="maarch_id" invisible="1"/>
                             <field name="subject"/>
                             <field name="doc_date"/>
                         </tree>
                     </field>
 
                     <footer>
-                        <button name="add_maarchdoc_in_odoo" type="object"
+                        <button name="add_maarchdoc_into_odoo" type="object"
                                 string="ajouter" class="oe_highlight"/>
                         ou
                         <button special="cancel" string="annuler"/>

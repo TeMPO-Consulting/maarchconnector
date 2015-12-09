@@ -8,7 +8,7 @@ class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
-    document_ids = fields.Many2many('maarch.document', string=u"Documents")
+    document_ids = fields.Many2many('maarch.document', string=u"Liste des documents")
 
     @api.multi
     def search_docs(self):
@@ -53,10 +53,16 @@ class Wizard(models.TransientModel):
         result.update({'doc_date': doc.doc_date})
         doclist.append(result)
 
+    @api.multi
+    def add_maarchdoc_into_odoo(self):
+        # TODO
+        pass
+
+
 class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
 
     maarch_id = fields.Char(string=u"id", readonly=True)
     subject = fields.Char(string=u"objet", readonly=True)
     doc_date = fields.Date(string=u"date", readonly=True)
-
+    to_add = fields.Boolean(string=u"à ajouter", default=False)
