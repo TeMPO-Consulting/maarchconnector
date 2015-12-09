@@ -2,6 +2,7 @@
 
 from openerp import models, fields, api
 from suds.client import Client
+import pickle
 
 
 class Wizard(models.TransientModel):
@@ -56,7 +57,11 @@ class Wizard(models.TransientModel):
     @api.multi
     def add_maarchdoc_into_odoo(self):
         # TODO
-        pass
+        for doc in self.document_ids:
+            # get the Maarch ids of all files selected
+            if doc.to_add:
+                with open('/tmp/testlog.txt', 'a') as f:
+                    f.write("doc : %s\n" % doc.maarch_id)
 
 
 class DocumentWizard(models.TransientModel):
