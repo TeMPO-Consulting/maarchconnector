@@ -74,12 +74,21 @@ class Wizard(models.TransientModel):
 
     @api.multi
     def add_maarchdoc_into_odoo(self):
-        # TODO
+        ir_attachment = self.env['ir.attachment']
         for doc in self.document_ids:
-            # get the Maarch ids of all files selected
+            # get the data of all selected files
             if doc.to_add:
-                with open('/tmp/testlog.txt', 'a') as f:
-                    f.write("doc : %s\n" % doc.maarch_id)
+                # TODO : get the binary data with the doc.maarch_id
+                file_data = {
+                    'name': doc.subject,
+                    'type': 'binary',
+                    'datas': None,
+                    'datas_fname': doc.subject,
+                    'res_model': self.env.context['model'],
+                    'res_id': self.env.context['ids'][0],
+                    'user_id': self.env.uid,
+                }
+                ir_attachment.create(file_data)
 
 
 class DocumentWizard(models.TransientModel):
