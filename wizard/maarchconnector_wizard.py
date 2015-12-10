@@ -2,13 +2,17 @@
 
 from openerp import models, fields, api
 from suds.client import Client
-import pickle
+from datetime import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
+    min_date = fields.Date(string=u"Daté à partir du", required=True,
+                           default=datetime.now() - relativedelta(years=1))  # one year ago by default
     document_ids = fields.Many2many('maarch.document', string=u"Liste des documents")
 
     @api.multi
@@ -17,6 +21,7 @@ class Wizard(models.TransientModel):
         _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
         param = _client_maarch.factory.create('customizedSearchParams')
         param.subject = self.filesubject
+        param.min_doc_date = self.min_date
         response = _client_maarch.service.customizedSearchResources(param)
         self.document_ids = None  # empty the result list in case the wizard has been reloaded
         doclist = []
@@ -53,6 +58,19 @@ class Wizard(models.TransientModel):
         result.update({'subject': doc.subject.encode('utf8')})
         result.update({'doc_date': doc.doc_date})
         doclist.append(result)
+
+    @api.onchange('min_date')
+    def _onchange_min_date(self):
+        """
+        Display a warning message when the selected date is in the future
+        """
+        if datetime.strptime(self.min_date, "%Y-%m-%d").date() > date.today():
+            return {
+                'warning': {
+                    'title': "Date dans le futur",
+                    'message': "La date sélectionnée est dans le futur.",
+                },
+            }
 
     @api.multi
     def add_maarchdoc_into_odoo(self):

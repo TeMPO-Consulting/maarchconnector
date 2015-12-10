@@ -7,8 +7,11 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <group col="6">
+                        <group col="12">
                             <field name="filesubject"/>
+                        </group>
+                        <group col="6">
+                            <field name="min_date"/>
                         </group>
                         <group col="6">
                             <button name="search_docs" type="object"
