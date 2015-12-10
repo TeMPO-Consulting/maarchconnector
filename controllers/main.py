@@ -10,6 +10,7 @@ import suds
 import urllib2
 from suds.client import Client
 from datetime import datetime
+import os
 
 
 class MyBinary(Binary):
@@ -33,7 +34,6 @@ class MyBinary(Binary):
                     var win = window.top.window;
                     win.jQuery(win).trigger(%s, %s);
                 </script>"""
-
         if self.get_the_active_conf().get('is_conf_active'):
             try:
                 if not self._filesubject_in_maarch:
@@ -45,7 +45,9 @@ class MyBinary(Binary):
                         args = {'error': "La pièce jointe n'a pas été enregistrée dans Maarch ni dans Odoo.",
                                 'maarchError': True}
                         return out % (simplejson.dumps(callback), simplejson.dumps(args))
-                self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch)
+                # file extension without "."
+                extension = os.path.splitext(ufile.filename)[1].replace('.', '')
+                self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch, extension)
             except exceptions.ValidationError as e:
                 args = {'error': str(e[1]), 'maarchError': True}
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
@@ -77,8 +79,7 @@ class MyBinary(Binary):
         """
         self._filesubject_in_maarch = subject
 
-
-    def _add_to_maarch(self, base64_encoded_content, document_subject):
+    def _add_to_maarch(self, base64_encoded_content, document_subject, extension='pdf'):
         """
         Add the file into Maarch under the name "document_subject"
         :param base64_encoded_content: content of the file encoded in base 64
@@ -111,9 +112,11 @@ class MyBinary(Binary):
             data.datas.append(doc_date)
             data.datas.append(type_id)
             data.datas.append(subject)
+            if not extension:
+                extension = 'pdf'
             # call to the web service method
             _client_maarch.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
-                                                 'res_letterbox', 'pdf', 'INIT')
+                                                 'res_letterbox', extension, 'INIT')
         except urllib2.URLError:
             error = "accès au serveur impossible.<br/>L'adresse fournie est incorrecte, ou le serveur est indisponible."
         except suds.transport.TransportError:
