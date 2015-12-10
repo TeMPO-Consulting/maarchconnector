@@ -105,6 +105,6 @@ class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
 
     maarch_id = fields.Char(string=u"id", readonly=True)
-    subject = fields.Char(string=u"objet", readonly=True)
+    subject = fields.Char(string=u"objet")
     doc_date = fields.Date(string=u"date", readonly=True)
     to_add = fields.Boolean(string=u"à ajouter", default=False)
