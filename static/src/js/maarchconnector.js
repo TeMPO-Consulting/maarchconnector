@@ -52,11 +52,9 @@
 
         on_maarch_doc: function() {
             // method called on click on "Add from Maarch..."
-            // TODO : clean the commented code
             var self = this;
             var view = self.getParent();
             var ids = ( view.fields_view.type != "form" )? view.groups.get_selection().ids : [ view.datarecord.id ];
-            //var ds = new instance.web.DataSet(this, 'ir.attachment', context);
             var context = {
                 'model': view.dataset.model,
                 'ids': ids,

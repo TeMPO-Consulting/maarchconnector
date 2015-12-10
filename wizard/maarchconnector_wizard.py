@@ -5,10 +5,14 @@ from suds.client import Client
 from datetime import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import re
 
 
 class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
+
+    # TODO : replace the test data
+    _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
 
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     min_date = fields.Date(string=u"Daté à partir du", required=True,
@@ -18,11 +22,11 @@ class Wizard(models.TransientModel):
     @api.multi
     def search_docs(self):
         # TODO : replace the test data
-        _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
-        param = _client_maarch.factory.create('customizedSearchParams')
+        self._client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
+        param = self._client_maarch.factory.create('customizedSearchParams')
         param.subject = self.filesubject
         param.min_doc_date = self.min_date
-        response = _client_maarch.service.customizedSearchResources(param)
+        response = self._client_maarch.service.customizedSearchResources(param)
         self.document_ids = None  # empty the result list in case the wizard has been reloaded
         doclist = []
         if response:
@@ -78,11 +82,17 @@ class Wizard(models.TransientModel):
         for doc in self.document_ids:
             # get the data of all selected files
             if doc.to_add:
-                # TODO : get the binary data with the doc.maarch_id
+                maarch_file = self._client_maarch.service.viewResource(doc.maarch_id, 'res_letterbox', 'adr_x', True)
+                binary_data = maarch_file.file_content
+                # add the file extension if necessary
+                if maarch_file.ext:
+                    regex = '%s$' % maarch_file.ext
+                    if not re.search(regex, doc.subject):
+                        doc.subject = '%s.%s' % (doc.subject, maarch_file.ext)
                 file_data = {
                     'name': doc.subject,
                     'type': 'binary',
-                    'datas': None,
+                    'datas': binary_data,
                     'datas_fname': doc.subject,
                     'res_model': self.env.context['model'],
                     'res_id': self.env.context['ids'][0],
