@@ -75,12 +75,10 @@
             };
             // used to open the new view
             self.do_action(action, {
-                // refresh list of documents
-                /*
+                // the list of attachments is refreshed when the wizard is closed
                 on_close: function () {
                     self.do_attachement_update(self.dataset, self.model_id);
                 }
-                */
             });
         }
     });
