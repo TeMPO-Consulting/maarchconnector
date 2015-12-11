@@ -34,7 +34,7 @@
         on_attachment_changed: function(e) {
             // method overloaded so that the user can specify the file subject (for Maarch)
             var _super = this._super.bind(this); // to use the right context
-            instance.session.rpc('/tempo/maarchconnector/get_the_active_conf', {}).done(function (result) {
+            instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
                 if(result.is_conf_active)
                 {
                     // if a Maarch conf is active, ask for the file subject in Maarch (by defaut : filename)
@@ -54,40 +54,52 @@
             // method called on click on "Add from Maarch..."
             var self = this;
 
-            instance.session.rpc('/tempo/maarchconnector/client_creation', {
-                call_from_js : true
-            }).done(function (result) {
-                if(result && result.error && result.error.length > 0)
+            instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
+                if(!result.is_conf_active)
                 {
-                    // if the creation of the Maarch client has failed: display an error message
-                    self.do_notify('Connecteur Maarch', result.error, true);
+                    // if no configuration is active: display an error message
+                    self.do_notify('Connecteur Maarch',
+                                   'Erreur : aucun serveur Maarch n\'est activé.<br>' +
+                                   'Veuillez choisir le serveur à utiliser via le menu "Connecteur Maarch".', true);
                 }
                 else
                 {
-                    // if the connection with Maarch is OK: display a wizard to search a document to add
-                    var view = self.getParent();
-                    var ids = ( view.fields_view.type != "form" )? view.groups.get_selection().ids : [ view.datarecord.id ];
-                    var context = {
-                        'model': view.dataset.model,
-                        'ids': ids,
-                    };
+                    instance.session.rpc('/tempo/maarchconnector/client_creation', {
+                        call_from_js : true
+                    }).done(function (result) {
+                        if(result && result.error && result.error.length > 0)
+                        {
+                            // if the creation of the Maarch client has failed: display an error message
+                            self.do_notify('Connecteur Maarch', result.error, true);
+                        }
+                        else
+                        {
+                            // if the connection with Maarch is OK: display a wizard to search a document to add
+                            var view = self.getParent();
+                            var ids = (view.fields_view.type != "form") ? view.groups.get_selection().ids : [view.datarecord.id];
+                            var context = {
+                                'model': view.dataset.model,
+                                'ids': ids,
+                            };
 
-                    // used to send data to the "do_action" method
-                    var action = {
-                        name: "Recherche d'un document dans Maarch",
-                        type: 'ir.actions.act_window',
-                        res_model: 'maarch.wizard',
-                        view_mode: 'form',
-                        view_type: 'form',
-                        views: [[false, 'form']],
-                        target: 'new',
-                        context: context,
-                    };
-                    // used to open the new view
-                    self.do_action(action, {
-                        // the list of attachments is refreshed when the wizard is closed
-                        on_close: function () {
-                            self.do_attachement_update(self.dataset, self.model_id);
+                            // used to send data to the "do_action" method
+                            var action = {
+                                name: "Recherche d'un document dans Maarch",
+                                type: 'ir.actions.act_window',
+                                res_model: 'maarch.wizard',
+                                view_mode: 'form',
+                                view_type: 'form',
+                                views: [[false, 'form']],
+                                target: 'new',
+                                context: context,
+                            };
+                            // used to open the new view
+                            self.do_action(action, {
+                                // the list of attachments is refreshed when the wizard is closed
+                                on_close: function () {
+                                    self.do_attachement_update(self.dataset, self.model_id);
+                                }
+                            });
                         }
                     });
                 }

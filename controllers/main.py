@@ -53,7 +53,7 @@ class MyBinary(Binary):
             ufile.seek(0)
         return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
 
-    @http.route('/tempo/maarchconnector/get_the_active_conf', type='json', auth='user')
+    @http.route('/tempo/maarchconnector/is_conf_active', type='json', auth='user')
     def is_conf_active(self):
         """
         Indicate if a Maarch configuration is active.
