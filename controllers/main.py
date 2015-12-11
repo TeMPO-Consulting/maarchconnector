@@ -2,7 +2,6 @@
 
 import openerp.addons.web.http as http
 from openerp.addons.web.controllers.main import Binary
-from openerp import exceptions
 from openerp.http import request
 import base64
 import simplejson
@@ -46,8 +45,8 @@ class MyBinary(Binary):
                 # file extension without "."
                 extension = os.path.splitext(ufile.filename)[1].replace('.', '')
                 self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch, extension)
-            except exceptions.ValidationError as e:
-                args = {'error': str(e[1]), 'maarchError': True}
+            except Exception as e:
+                args = {'error': e.message, 'maarchError': True}
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
             # get back to the beginning of the file
             ufile.seek(0)
@@ -97,7 +96,7 @@ class MyBinary(Binary):
                 if call_from_js:
                     return {'error': error}  # if the method is called from the JS part
                 else:
-                    raise exceptions.ValidationError(error)  # if the method is called from the Python part
+                    raise Exception(error)  # if the method is called from the Python part
 
     def _add_to_maarch(self, base64_encoded_content, document_subject, extension='pdf'):
         """
