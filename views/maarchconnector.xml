@@ -52,9 +52,9 @@
             </field>
         </record>
 
-        <!-- window action : action opening a view or a set of views -->
+        <!-- window action: action opening a view or a set of views -->
         <record model="ir.actions.act_window" id="configuration_list_action">
-            <field name="name">Connecteur Maarch</field> <!-- showed on top of the page -->
+            <field name="name">Connecteur Maarch</field> <!-- shown on top of the page -->
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">maarchconnector.configuration</field>
             <field name="view_type">form</field>

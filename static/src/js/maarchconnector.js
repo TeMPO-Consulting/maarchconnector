@@ -10,7 +10,7 @@
     instance.web.Sidebar.include({
 
         redraw: function() {
-            // method overloaded to manage the menu entry relative to Maarch
+            // method overriden to manage the menu entry relative to Maarch
             var self = this;
             this._super.apply(this, arguments);
             self.$el.find('.oe_sidebar_add_attachment').after(QWeb.render('AddDocFromMaarch', {widget: self}))
@@ -21,7 +21,7 @@
         },
 
         do_attachement_update: function(dataset, model_id, args) {
-            // method overloaded to customize the display of error messages
+            // method overriden to customize the display of error messages
             if(args && args[0].maarchError)
             {
                 // display the error specific to Maarch
@@ -32,7 +32,7 @@
         },
 
         on_attachment_changed: function(e) {
-            // method overloaded so that the user can specify the file subject (for Maarch)
+            // method overriden so that the user can specify the file subject (for Maarch)
             var self = this;
             var _super = this._super.bind(this); // to use the right context
             instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {

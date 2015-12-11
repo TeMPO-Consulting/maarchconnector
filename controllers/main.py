@@ -16,6 +16,7 @@ class MyBinary(Binary):
     @http.route()
     def upload_attachment(self, callback, model, id, ufile):
         """
+        Override the method of the Binary class.
         Check if the Maarch server configuration is OK and call the _add_to_maarch method.
         Display an appropriate message if the document can't be added into Maarch.
         :param callback
