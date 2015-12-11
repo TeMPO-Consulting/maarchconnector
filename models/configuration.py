@@ -2,6 +2,9 @@
 
 from openerp import models, fields, api, exceptions
 import re
+import suds
+import urllib2
+from suds.client import Client
 
 
 class Configuration(models.Model):
@@ -90,6 +93,33 @@ class Configuration(models.Model):
                                        "si aucun serveur n'est activé.",
                         },
                     }
+
+    @api.multi
+    def configure_maarch_client(self):
+        """
+        Create and return the Maarch client to use. Raise an exception if the creation of the client fails.
+        :return: a Maarch client
+        """
+        maarch_client = None
+        error = ''
+        active_conf = self.get_the_active_configuration()
+        if active_conf:
+            url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
+            user_maarch = active_conf.maarch_user_login
+            password_maarch = active_conf.maarch_user_password
+            try:
+                maarch_client = Client(url_maarch, username=user_maarch, password=password_maarch)
+            except urllib2.URLError:
+                error = "accès au serveur impossible.<br/>L'adresse fournie est incorrecte, " \
+                        "ou le serveur est indisponible."
+            except suds.transport.TransportError:
+                error = "connexion impossible.<br/>Vérifiez l'URL et les identifiants de connexion fournis."
+            except Exception as e:
+                error = e.message
+            if error:
+                raise Exception("Une erreur s'est produite lors du traitement avec Maarch&nbsp: %s" % error)
+        return maarch_client
+
 
 
 

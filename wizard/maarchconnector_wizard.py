@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from openerp import models, fields, api
-from suds.client import Client
 from datetime import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -11,9 +10,6 @@ import re
 class Wizard(models.TransientModel):
     _name = 'maarch.wizard'
 
-    # TODO : replace the test data
-    _client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
-
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     min_date = fields.Date(string=u"Daté à partir du", required=True,
                            default=datetime.now() - relativedelta(years=1))  # one year ago by default
@@ -21,12 +17,11 @@ class Wizard(models.TransientModel):
 
     @api.multi
     def search_docs(self):
-        # TODO : replace the test data
-        self._client_maarch = Client("http://10.0.0.195/maarch15/ws_server.php?WSDL", username="bblier", password="maarch")
-        param = self._client_maarch.factory.create('customizedSearchParams')
+        maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
+        param = maarch_client.factory.create('customizedSearchParams')
         param.subject = self.filesubject
         param.min_doc_date = self.min_date
-        response = self._client_maarch.service.customizedSearchResources(param)
+        response = maarch_client.service.customizedSearchResources(param)
         self.document_ids = None  # empty the result list in case the wizard has been reloaded
         doclist = []
         if response:
@@ -79,10 +74,11 @@ class Wizard(models.TransientModel):
     @api.multi
     def add_maarchdoc_into_odoo(self):
         ir_attachment = self.env['ir.attachment']
+        maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
         for doc in self.document_ids:
             # get the data of all selected files
             if doc.to_add:
-                maarch_file = self._client_maarch.service.viewResource(doc.maarch_id, 'res_letterbox', 'adr_x', True)
+                maarch_file = maarch_client.service.viewResource(doc.maarch_id, 'res_letterbox', 'adr_x', True)
                 binary_data = maarch_file.file_content
                 # add the file extension if necessary
                 if maarch_file.ext:

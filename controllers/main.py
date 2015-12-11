@@ -5,16 +5,12 @@ from openerp.addons.web.controllers.main import Binary
 from openerp.http import request
 import base64
 import simplejson
-import suds
-import urllib2
-from suds.client import Client
 from datetime import datetime
 import os
 
 
 class MyBinary(Binary):
 
-    _client_maarch = None
     _filesubject_in_maarch = ''
 
     @http.route()
@@ -74,29 +70,23 @@ class MyBinary(Binary):
 
     @http.route('/tempo/maarchconnector/client_creation', type='json', auth='user')
     def client_creation(self, call_from_js=False):
-        self._client_maarch = None
-        error = ''
+        """
+        Call the method to create the Maarch client and return it.
+        If it fails, return a dictionnary with an error if the method has been called from the JS part,
+        otherwise raise an exception
+        :param call_from_js: whether the method has been called from the JS part or not (boolean)
+        :return: the Maarch client
+        """
         configuration_model = request.registry["maarchconnector.configuration"]
-        active_conf = configuration_model.get_the_active_configuration(request.cr, request.uid, [])
-        if active_conf:
-            url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
-            user_maarch = active_conf.maarch_user_login
-            password_maarch = active_conf.maarch_user_password
-            try:
-                self._client_maarch = Client(url_maarch, username=user_maarch, password=password_maarch)
-            except urllib2.URLError:
-                error = "accès au serveur impossible.<br/>L'adresse fournie est incorrecte, " \
-                        "ou le serveur est indisponible."
-            except suds.transport.TransportError:
-                error = "connexion impossible.<br/>Vérifiez l'URL et les identifiants de connexion fournis."
-            except Exception as e:
-                error = e.message
-            if error:
-                error = "Une erreur s'est produite lors du traitement avec Maarch&nbsp: %s" % error
-                if call_from_js:
-                    return {'error': error}  # if the method is called from the JS part
-                else:
-                    raise Exception(error)  # if the method is called from the Python part
+        try:
+            maarch_client = configuration_model.configure_maarch_client(request.cr, request.uid, [])
+        except Exception as e:
+            if call_from_js:
+                return {'error': e.message}  # if the method is called from the JS part
+            else:
+                raise Exception(e.message)  # if the method is called from the Python part
+        if not call_from_js:
+            return maarch_client
 
     def _add_to_maarch(self, base64_encoded_content, document_subject, extension='pdf'):
         """
@@ -105,23 +95,23 @@ class MyBinary(Binary):
         :param document_subject: file name or subject
         :return:
         """
-        self.client_creation()
-        mydate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        maarch_client = self.client_creation()
+        today = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # data relative to the document
-        data = self._client_maarch.factory.create('arrayOfData')
-        typist = self._client_maarch.factory.create('arrayOfDataContent')
+        data = maarch_client.factory.create('arrayOfData')
+        typist = maarch_client.factory.create('arrayOfDataContent')
         typist.column = 'typist'
         typist.value = 'odoo'
         typist.type = 'string'
-        doc_date = self._client_maarch.factory.create('arrayOfDataContent')
+        doc_date = maarch_client.factory.create('arrayOfDataContent')
         doc_date.column = 'doc_date'
-        doc_date.value = mydate
+        doc_date.value = today
         doc_date.type = 'string'
-        type_id = self._client_maarch.factory.create('arrayOfDataContent')
+        type_id = maarch_client.factory.create('arrayOfDataContent')
         type_id.column = 'type_id'
         type_id.value = '15'  # misc. by default
         type_id.type = 'string'
-        subject = self._client_maarch.factory.create('arrayOfDataContent')
+        subject = maarch_client.factory.create('arrayOfDataContent')
         subject.column = 'subject'
         subject.value = document_subject.decode('utf8')
         subject.type = 'string'
@@ -132,6 +122,6 @@ class MyBinary(Binary):
         if not extension:
             extension = 'pdf'
         # call to the web service method
-        self._client_maarch.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
-                                                  'res_letterbox', extension, 'INIT')
+        maarch_client.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
+                                            'res_letterbox', extension, 'INIT')
 
