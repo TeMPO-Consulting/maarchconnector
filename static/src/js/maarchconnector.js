@@ -33,19 +33,33 @@
 
         on_attachment_changed: function(e) {
             // method overloaded so that the user can specify the file subject (for Maarch)
+            var self = this;
             var _super = this._super.bind(this); // to use the right context
             instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
                 if(result.is_conf_active)
                 {
-                    // if a Maarch conf is active, ask for the file subject in Maarch (by defaut : filename)
-                    filesubject = prompt("Objet du document à enregistrer dans Maarch : ", e.target.value);
-                    instance.session.rpc('/tempo/maarchconnector/set_subject', {
-                        subject : filesubject
+                    // if a configuration is active: try to create the Maarch client
+                    instance.session.rpc('/tempo/maarchconnector/client_creation', {
+                        call_from_js : true
                     }).done(function (result) {
-                        _super(e);
+                        if(result && result.error && result.error.length > 0)
+                        {
+                            self.do_notify('Connecteur Maarch', result.error, true);
+                        }
+                        else
+                        {
+                            // ask for the file subject in Maarch (by defaut: filename)
+                            filesubject = prompt("Objet du document à enregistrer dans Maarch : ", e.target.value);
+                            instance.session.rpc('/tempo/maarchconnector/set_subject', {
+                                subject : filesubject
+                            }).done(function (result) {
+                                _super(e);
+                            });
+                        }
                     });
                 } else {
-                   _super(e);
+                    // if no configuration is active: the attachment is added only into Odoo
+                    _super(e);
                 }
             });
         },
