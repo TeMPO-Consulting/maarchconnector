@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api
+from openerp import models, fields, api, exceptions
 from datetime import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -17,33 +17,37 @@ class Wizard(models.TransientModel):
 
     @api.multi
     def search_docs(self):
-        maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
-        param = maarch_client.factory.create('customizedSearchParams')
-        param.subject = self.filesubject
-        param.min_doc_date = self.min_date
-        response = maarch_client.service.customizedSearchResources(param)
-        self.document_ids = None  # empty the result list in case the wizard has been reloaded
-        doclist = []
-        if response:
-            maarchdoc = response[0]
-            # if there is more than 1 result we handle a list
-            if isinstance(maarchdoc, list):
-                for doc in maarchdoc:
-                    self._treeview_line_construction(doc, doclist)
-            # if there is exactly one result we get directly the document instance
-            else:
-                self._treeview_line_construction(maarchdoc, doclist)
-        self.document_ids = doclist
-        return {
-            'name': 'Recherche d\'un document dans Maarch',
-            'type': 'ir.actions.act_window',
-            'res_model': 'maarch.wizard',
-            'view_mode': 'form',
-            'view_type': 'form',
-            'res_id': self.id,  # reload the same wizard
-            'views': [(False, 'form')],
-            'target': 'new',
-        }
+        try:
+            maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
+            param = maarch_client.factory.create('customizedSearchParams')
+            param.subject = self.filesubject
+            param.min_doc_date = self.min_date
+            response = maarch_client.service.customizedSearchResources(param)
+            self.document_ids = None  # empty the result list in case the wizard has been reloaded
+            doclist = []
+            if response:
+                maarchdoc = response[0]
+                # if there is more than 1 result we handle a list
+                if isinstance(maarchdoc, list):
+                    for doc in maarchdoc:
+                        self._treeview_line_construction(doc, doclist)
+                # if there is exactly one result we get directly the document instance
+                else:
+                    self._treeview_line_construction(maarchdoc, doclist)
+            self.document_ids = doclist
+            return {
+                'name': 'Recherche d\'un document dans Maarch',
+                'type': 'ir.actions.act_window',
+                'res_model': 'maarch.wizard',
+                'view_mode': 'form',
+                'view_type': 'form',
+                'res_id': self.id,  # reload the same wizard
+                'views': [(False, 'form')],
+                'target': 'new',
+            }
+        except Exception as e:
+            # if a problem with the Maarch server occurs after the wizard has been displayed...
+            raise exceptions.ValidationError(e.message)
 
     def _treeview_line_construction(self, doc, doclist):
         """
@@ -74,27 +78,31 @@ class Wizard(models.TransientModel):
     @api.multi
     def add_maarchdoc_into_odoo(self):
         ir_attachment = self.env['ir.attachment']
-        maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
-        for doc in self.document_ids:
-            # get the data of all selected files
-            if doc.to_add:
-                maarch_file = maarch_client.service.viewResource(doc.maarch_id, 'res_letterbox', 'adr_x', True)
-                binary_data = maarch_file.file_content
-                # add the file extension if necessary
-                if maarch_file.ext:
-                    regex = '%s$' % maarch_file.ext
-                    if not re.search(regex, doc.subject):
-                        doc.subject = '%s.%s' % (doc.subject, maarch_file.ext)
-                file_data = {
-                    'name': doc.subject,
-                    'type': 'binary',
-                    'datas': binary_data,
-                    'datas_fname': doc.subject,
-                    'res_model': self.env.context['model'],
-                    'res_id': self.env.context['ids'][0],
-                    'user_id': self.env.uid,
-                }
-                ir_attachment.create(file_data)
+        try:
+            maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
+            for doc in self.document_ids:
+                # get the data of all selected files
+                if doc.to_add:
+                    maarch_file = maarch_client.service.viewResource(doc.maarch_id, 'res_letterbox', 'adr_x', True)
+                    binary_data = maarch_file.file_content
+                    # add the file extension if necessary
+                    if maarch_file.ext:
+                        regex = '%s$' % maarch_file.ext
+                        if not re.search(regex, doc.subject):
+                            doc.subject = '%s.%s' % (doc.subject, maarch_file.ext)
+                    file_data = {
+                        'name': doc.subject,
+                        'type': 'binary',
+                        'datas': binary_data,
+                        'datas_fname': doc.subject,
+                        'res_model': self.env.context['model'],
+                        'res_id': self.env.context['ids'][0],
+                        'user_id': self.env.uid,
+                    }
+                    ir_attachment.create(file_data)
+        except Exception as e:
+            # if a problem with the Maarch server occurs after the wizard has been displayed...
+            raise exceptions.ValidationError(e.message)
 
 
 class DocumentWizard(models.TransientModel):
