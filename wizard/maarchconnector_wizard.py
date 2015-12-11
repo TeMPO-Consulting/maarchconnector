@@ -17,6 +17,10 @@ class Wizard(models.TransientModel):
 
     @api.multi
     def search_docs(self):
+        """
+        Display in the wizard the list of documents that match the criteria given by the user
+        :return:
+        """
         try:
             maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
             param = maarch_client.factory.create('customizedSearchParams')
@@ -77,6 +81,10 @@ class Wizard(models.TransientModel):
 
     @api.multi
     def add_maarchdoc_into_odoo(self):
+        """
+        Add the selected Maarch files into Odoo as attachments
+        :return:
+        """
         ir_attachment = self.env['ir.attachment']
         try:
             maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
