@@ -6,6 +6,7 @@ from openerp.http import request
 import base64
 import simplejson
 from datetime import datetime
+from HTMLParser import HTMLParser
 import os
 
 
@@ -63,31 +64,34 @@ class MyBinary(Binary):
     @http.route('/tempo/maarchconnector/set_subject', type='json', auth='none')
     def set_subject(self, subject):
         """
-        Set the subject for the file to be registered in Maarch
+        Set the subject for the file to be registered in Maarch (strip the XML and HTML tags)
         :param subject:
         :return:
         """
-        self._filesubject_in_maarch = subject
+        mlstripper = MLStripper()
+        mlstripper.feed(subject)
+        self._filesubject_in_maarch = mlstripper.get_data()
 
-    @http.route('/tempo/maarchconnector/client_creation', type='json', auth='user')
-    def client_creation(self, call_from_js=False):
+    def get_client(self):
         """
         Call the method to create the Maarch client and return it.
-        If it fails, return a dictionnary with an error if the method has been called from the JS part,
-        otherwise raise an exception
-        :param call_from_js: whether the method has been called from the JS part or not (boolean)
         :return: the Maarch client
         """
         configuration_model = request.registry["maarchconnector.configuration"]
+        return configuration_model.get_maarch_client(request.cr, request.uid, [])
+
+    @http.route('/tempo/maarchconnector/is_client_ok', type='json', auth='user')
+    def is_client_ok(self):
+        """
+        Check if the Maarch client can be created. If it fails, return a dictionary with an error.
+        :return: a dictionary with an error (empty or not)
+        """
+        msg = ""
         try:
-            maarch_client = configuration_model.configure_maarch_client(request.cr, request.uid, [])
+            self.get_client()
         except Exception as e:
-            if call_from_js:
-                return {'error': e.message}  # if the method is called from the JS part
-            else:
-                raise Exception(e.message)  # if the method is called from the Python part
-        if not call_from_js:
-            return maarch_client
+            msg = e.message
+        return {'error': msg}
 
     def _add_to_maarch(self, base64_encoded_content, document_subject, extension='pdf'):
         """
@@ -96,7 +100,7 @@ class MyBinary(Binary):
         :param document_subject: file name or subject
         :return:
         """
-        maarch_client = self.client_creation()
+        maarch_client = self.get_client()
         today = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # data relative to the document
         data = maarch_client.factory.create('arrayOfData')
@@ -126,3 +130,18 @@ class MyBinary(Binary):
         maarch_client.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
                                             'res_letterbox', extension, 'INIT')
 
+
+class MLStripper(HTMLParser):
+    """
+    Used to strip the XML and HTML tags
+    """
+
+    def __init__(self):
+        self.reset()
+        self.fed = []
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def get_data(self):
+        return ''.join(self.fed)

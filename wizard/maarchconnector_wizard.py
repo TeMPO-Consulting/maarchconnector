@@ -22,7 +22,7 @@ class Wizard(models.TransientModel):
         :return:
         """
         try:
-            maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
+            maarch_client = self.env['maarchconnector.configuration'].get_maarch_client()
             param = maarch_client.factory.create('customizedSearchParams')
             param.subject = self.filesubject
             param.min_doc_date = self.min_date
@@ -87,7 +87,7 @@ class Wizard(models.TransientModel):
         """
         ir_attachment = self.env['ir.attachment']
         try:
-            maarch_client = self.env['maarchconnector.configuration'].configure_maarch_client()
+            maarch_client = self.env['maarchconnector.configuration'].get_maarch_client()
             for doc in self.document_ids:
                 # get the data of all selected files
                 if doc.to_add:

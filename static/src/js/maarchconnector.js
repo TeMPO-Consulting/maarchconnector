@@ -38,11 +38,9 @@
             instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
                 if(result.is_conf_active)
                 {
-                    // if a configuration is active: try to create the Maarch client
-                    instance.session.rpc('/tempo/maarchconnector/client_creation', {
-                        call_from_js : true
-                    }).done(function (result) {
-                        if(result && result.error && result.error.length > 0)
+                    // if a configuration is active: check if the Maarch client can be created
+                    instance.session.rpc('/tempo/maarchconnector/is_client_ok', {}).done(function (result) {
+                        if(result.error.length > 0)
                         {
                             self.do_notify('Connecteur Maarch', result.error, true);
                         }
@@ -78,10 +76,8 @@
                 }
                 else
                 {
-                    instance.session.rpc('/tempo/maarchconnector/client_creation', {
-                        call_from_js : true
-                    }).done(function (result) {
-                        if(result && result.error && result.error.length > 0)
+                    instance.session.rpc('/tempo/maarchconnector/is_client_ok', {}).done(function (result) {
+                        if(result.error.length > 0)
                         {
                             // if the creation of the Maarch client has failed: display an error message
                             self.do_notify('Connecteur Maarch', result.error, true);

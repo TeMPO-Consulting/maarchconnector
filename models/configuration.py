@@ -34,8 +34,7 @@ class Configuration(models.Model):
         request = "SELECT COUNT(activated) FROM maarchconnector_configuration WHERE activated IS TRUE;"
         self.env.cr.execute(request)
         result = self.env.cr.fetchone()
-        # convert the tuple "result" into an integer
-        return int(''.join(str(x) for x in result))
+        return int(result[0])
 
     @api.constrains('server_address')
     def _validate_server_address_format(self):
@@ -95,7 +94,7 @@ class Configuration(models.Model):
                     }
 
     @api.multi
-    def configure_maarch_client(self):
+    def get_maarch_client(self):
         """
         Create and return the Maarch client to use. Raise an exception if the creation of the client fails.
         :return: a Maarch client
