@@ -10,7 +10,7 @@ from HTMLParser import HTMLParser
 import os
 
 
-class MyBinary(Binary):
+class MaarchBinary(Binary):
 
     _filesubject_in_maarch = ''
 
@@ -48,7 +48,7 @@ class MyBinary(Binary):
                 return out % (simplejson.dumps(callback), simplejson.dumps(args))
             # get back to the beginning of the file
             ufile.seek(0)
-        return super(MyBinary, self).upload_attachment(callback, model, id, ufile)
+        return super(MaarchBinary, self).upload_attachment(callback, model, id, ufile)
 
     @http.route('/tempo/maarchconnector/is_conf_active', type='json', auth='user')
     def is_conf_active(self):
