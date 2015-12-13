@@ -68,9 +68,12 @@ class MaarchBinary(Binary):
         :param subject:
         :return:
         """
-        mlstripper = MLStripper()
-        mlstripper.feed(subject)
-        self._filesubject_in_maarch = mlstripper.get_data()
+        if subject:
+            mlstripper = MLStripper()
+            mlstripper.feed(subject)
+            self._filesubject_in_maarch = mlstripper.get_data()
+        else:
+            self._filesubject_in_maarch = None
 
     def get_client(self):
         """
