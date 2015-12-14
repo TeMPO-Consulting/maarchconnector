@@ -84,7 +84,7 @@ class SearchWizard(models.TransientModel):
         """
         Add the selected Maarch files into Odoo as attachments
         """
-        ir_attachment = self.env['ir.attachment']
+        IrAttachment = self.env['ir.attachment']
         try:
             maarch_client = self.env['maarchconnector.configuration'].get_maarch_client()
             for doc in self.document_ids:
@@ -106,7 +106,7 @@ class SearchWizard(models.TransientModel):
                         'res_id': self.env.context['ids'][0],
                         'user_id': self.env.uid,
                     }
-                    ir_attachment.create(file_data)
+                    IrAttachment.create(file_data)
         except Exception as e:
             # if a problem with the Maarch server occurs after the wizard has been displayed...
             raise exceptions.ValidationError(e.message)
@@ -121,7 +121,7 @@ class DocumentWizard(models.TransientModel):
     to_add = fields.Boolean(string=u"à ajouter", default=False)
 
     @api.onchange('subject')
-    def _validate_subject_format(self):
+    def _onchange_subject(self):
         """
         Remove characters that can cause issues in filenames
         """

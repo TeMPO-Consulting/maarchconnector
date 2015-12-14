@@ -75,7 +75,7 @@ class MaarchBinary(Binary):
         else:
             self._filesubject_in_maarch = None
 
-    def get_client(self):
+    def _get_client(self):
         """
         Call the method to create the Maarch client and return it.
         :return: the Maarch client
@@ -91,7 +91,7 @@ class MaarchBinary(Binary):
         """
         msg = ""
         try:
-            self.get_client()
+            self._get_client()
         except Exception as e:
             msg = e.message
         return {'error': msg}
@@ -103,7 +103,7 @@ class MaarchBinary(Binary):
         :param document_subject: file name or subject
         :param extension: file extension without "."
         """
-        maarch_client = self.get_client()
+        maarch_client = self._get_client()
         today = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # data relative to the document
         data = maarch_client.factory.create('arrayOfData')
