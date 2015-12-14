@@ -7,8 +7,8 @@ from dateutil.relativedelta import relativedelta
 import re
 
 
-class Wizard(models.TransientModel):
-    _name = 'maarch.wizard'
+class SearchWizard(models.TransientModel):
+    _name = 'maarch.search'
 
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     min_date = fields.Date(string=u"Daté à partir du", required=True,
@@ -42,7 +42,7 @@ class Wizard(models.TransientModel):
             return {
                 'name': 'Recherche d\'un document dans Maarch',
                 'type': 'ir.actions.act_window',
-                'res_model': 'maarch.wizard',
+                'res_model': 'maarch.search',
                 'view_mode': 'form',
                 'view_type': 'form',
                 'res_id': self.id,  # reload the same wizard

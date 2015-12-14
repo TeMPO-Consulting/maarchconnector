@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="wizard_form_view">
+        <record id="wizard_form_view" model="ir.ui.view">
             <field name="name">wizard.form</field>
-            <field name="model">maarch.wizard</field>
+            <field name="model">maarch.search</field>
             <field name="arch" type="xml">
                 <form>
                     <group>
