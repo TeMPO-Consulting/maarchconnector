@@ -21,7 +21,8 @@
         },
 
         do_attachement_update: function(dataset, model_id, args) {
-            // method overriden to customize the display of error messages
+            // method overriden to customize the display of error messages:
+            // they remain on the screen instead of disappearing after 2.5 sec
             if(args && args[0].maarchError)
             {
                 // display the error specific to Maarch
