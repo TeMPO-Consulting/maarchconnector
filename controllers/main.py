@@ -70,7 +70,7 @@ class MaarchBinary(Binary):
         """
         if subject:
             mlstripper = MLStripper()
-            mlstripper.feed(subject)
+            mlstripper.feed(subject.encode('utf8'))  # encoding for special characters (accents...)
             self._filesubject_in_maarch = mlstripper.get_data()
         else:
             self._filesubject_in_maarch = None
