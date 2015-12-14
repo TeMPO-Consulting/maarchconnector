@@ -19,7 +19,7 @@ class SearchWizard(models.TransientModel):
     def search_docs(self):
         """
         Display in the wizard the list of documents that match the criteria given by the user
-        :return:
+        :return: a dictionary that corresponds to the wizard
         """
         try:
             maarch_client = self.env['maarchconnector.configuration'].get_maarch_client()
@@ -58,7 +58,6 @@ class SearchWizard(models.TransientModel):
         Construct one line in the tree view
         :param doc: the document to add in the list
         :param doclist: the list used to populate the tree view
-        :return:
         """
         result = {}
         result.update({'maarch_id': doc.res_id})
@@ -70,6 +69,7 @@ class SearchWizard(models.TransientModel):
     def _onchange_min_date(self):
         """
         Display a warning message when the selected date is in the future
+        :return: a dictionary with a 'warning' key or None
         """
         if datetime.strptime(self.min_date, "%Y-%m-%d").date() > date.today():
             return {
@@ -83,7 +83,6 @@ class SearchWizard(models.TransientModel):
     def add_maarchdoc_into_odoo(self):
         """
         Add the selected Maarch files into Odoo as attachments
-        :return:
         """
         ir_attachment = self.env['ir.attachment']
         try:

@@ -40,7 +40,6 @@ class Configuration(models.Model):
     def _validate_server_address_format(self):
         """
         Add "http://" to the server address if it hasn't been mentionned
-        :return:
         """
         for r in self:
             if not re.search('^https?://', r.server_address):
@@ -49,8 +48,7 @@ class Configuration(models.Model):
     @api.constrains('activated')
     def _validate_activated_configuration(self):
         """
-        Checks that there is no more than one configuration activated
-        :return:
+        Check that there is no more than one configuration activated, otherwise raise an exception
         """
         # number of activated configurations included the one we're working on
         nb_activated_configurations = self._count_activated_configurations()
@@ -61,6 +59,7 @@ class Configuration(models.Model):
     @api.multi
     def get_the_activated_configuration(self):
             """
+            Get the server configuration currently activated
             :return: the activated configuration if it exists, otherwise None
             """
             ret = None
@@ -73,7 +72,7 @@ class Configuration(models.Model):
     def _onchange_activated_configuration(self):
         """
         Display a warning message when no Maarch server is activated
-        :return:
+        :return: a dictionary with a 'warning' key or None
         """
         nb_activated_configurations = self._count_activated_configurations()
         activated_configuration = self.get_the_activated_configuration()

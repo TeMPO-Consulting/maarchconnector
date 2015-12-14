@@ -54,6 +54,7 @@ class MaarchBinary(Binary):
     def is_conf_activated(self):
         """
         Indicate if a Maarch configuration is activated.
+        :return: a dictionary (key 'is_conf_activated': boolean)
         """
         ret = False
         configuration_model = request.registry["maarchconnector.configuration"]
@@ -66,7 +67,6 @@ class MaarchBinary(Binary):
         """
         Set the subject for the file to be registered in Maarch (strip the XML and HTML tags)
         :param subject:
-        :return:
         """
         if subject:
             mlstripper = MLStripper()
@@ -87,7 +87,7 @@ class MaarchBinary(Binary):
     def is_client_ok(self):
         """
         Check if the Maarch client can be created. If it fails, return a dictionary with an error.
-        :return: a dictionary with an error (empty or not)
+        :return: a dictionary with the 'error' key (empty or not)
         """
         msg = ""
         try:
@@ -101,7 +101,7 @@ class MaarchBinary(Binary):
         Add the file into Maarch under the name "document_subject"
         :param base64_encoded_content: content of the file encoded in base 64
         :param document_subject: file name or subject
-        :return:
+        :param extension: file extension without "."
         """
         maarch_client = self.get_client()
         today = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
