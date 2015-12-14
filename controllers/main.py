@@ -29,7 +29,7 @@ class MaarchBinary(Binary):
                     var win = window.top.window;
                     win.jQuery(win).trigger(%s, %s);
                 </script>"""
-        if self.is_conf_active().get('is_conf_active'):
+        if self.is_conf_activated().get('is_conf_activated'):
             try:
                 if not self._filesubject_in_maarch:
                     # if the user hasn't mentionned any subject we use the filename
@@ -50,16 +50,16 @@ class MaarchBinary(Binary):
             ufile.seek(0)
         return super(MaarchBinary, self).upload_attachment(callback, model, id, ufile)
 
-    @http.route('/tempo/maarchconnector/is_conf_active', type='json', auth='user')
-    def is_conf_active(self):
+    @http.route('/tempo/maarchconnector/is_conf_activated', type='json', auth='user')
+    def is_conf_activated(self):
         """
-        Indicate if a Maarch configuration is active.
+        Indicate if a Maarch configuration is activated.
         """
         ret = False
         configuration_model = request.registry["maarchconnector.configuration"]
-        if configuration_model.get_the_active_configuration(request.cr, request.uid, []):
+        if configuration_model.get_the_activated_configuration(request.cr, request.uid, []):
             ret = True
-        return {'is_conf_active': ret}
+        return {'is_conf_activated': ret}
 
     @http.route('/tempo/maarchconnector/set_subject', type='json', auth='none')
     def set_subject(self, subject):

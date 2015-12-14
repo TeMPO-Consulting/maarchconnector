@@ -28,7 +28,7 @@ class Configuration(models.Model):
 
     def _count_activated_configurations(self):
         """
-        Get the number of active configurations
+        Get the number of activated configurations
         :return: how many configurations are activated (integer)
         """
         request = "SELECT COUNT(activated) FROM maarchconnector_configuration WHERE activated IS TRUE;"
@@ -47,21 +47,21 @@ class Configuration(models.Model):
                 r.server_address = 'http://%s' % r.server_address
 
     @api.constrains('activated')
-    def _validate_active_configuration(self):
+    def _validate_activated_configuration(self):
         """
-        Checks that there is no more than one configuration active
+        Checks that there is no more than one configuration activated
         :return:
         """
-        # number of active configurations included the one we're working on
-        nb_active_configurations = self._count_activated_configurations()
+        # number of activated configurations included the one we're working on
+        nb_activated_configurations = self._count_activated_configurations()
         for r in self:
-            if r.activated and nb_active_configurations > 1:
+            if r.activated and nb_activated_configurations > 1:
                 raise exceptions.ValidationError("Vous ne pouvez activer qu'un seul serveur Maarch à la fois.")
 
     @api.multi
-    def get_the_active_configuration(self):
+    def get_the_activated_configuration(self):
             """
-            :return: the active configuration if it exists, otherwise None
+            :return: the activated configuration if it exists, otherwise None
             """
             ret = None
             configurations = self.search([('activated', '=', True)])
@@ -75,16 +75,16 @@ class Configuration(models.Model):
         Display a warning message when no Maarch server is activated
         :return:
         """
-        nb_active_configurations = self._count_activated_configurations()
-        active_configuration = self.get_the_active_configuration()
+        nb_activated_configurations = self._count_activated_configurations()
+        activated_configuration = self.get_the_activated_configuration()
         actual_record_id = self._origin.id
 
         # a warning message is displayed when "activated" isn't checked AND :
         # - either no other configuration was activated
         # - or the activated configuration was the one we're working on
         if (not self.activated) and \
-            (nb_active_configurations == 0 or
-                (active_configuration and active_configuration.id == actual_record_id)):
+            (nb_activated_configurations == 0 or
+                (activated_configuration and activated_configuration.id == actual_record_id)):
                     return {
                         'warning': {
                             'title': "Aucun serveur Maarch activé",
@@ -101,11 +101,11 @@ class Configuration(models.Model):
         """
         maarch_client = None
         error = ''
-        active_conf = self.get_the_active_configuration()
-        if active_conf:
-            url_maarch = '%s/ws_server.php?WSDL' % active_conf.server_address
-            user_maarch = active_conf.maarch_user_login
-            password_maarch = active_conf.maarch_user_password
+        activated_conf = self.get_the_activated_configuration()
+        if activated_conf:
+            url_maarch = '%s/ws_server.php?WSDL' % activated_conf.server_address
+            user_maarch = activated_conf.maarch_user_login
+            password_maarch = activated_conf.maarch_user_password
             try:
                 maarch_client = Client(url_maarch, username=user_maarch, password=password_maarch)
             except urllib2.URLError:

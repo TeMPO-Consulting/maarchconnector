@@ -35,10 +35,10 @@
             // method overriden so that the user can specify the file subject (for Maarch)
             var self = this;
             var _super = this._super.bind(this); // to use the right context
-            instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
-                if(result.is_conf_active)
+            instance.session.rpc('/tempo/maarchconnector/is_conf_activated', {}).done(function (result) {
+                if(result.is_conf_activated)
                 {
-                    // if a configuration is active: check if the Maarch client can be created
+                    // if a configuration is activated: check if the Maarch client can be created
                     instance.session.rpc('/tempo/maarchconnector/is_client_ok', {}).done(function (result) {
                         if(result.error.length > 0)
                         {
@@ -56,7 +56,7 @@
                         }
                     });
                 } else {
-                    // if no configuration is active: the attachment is added only into Odoo
+                    // if no configuration is activated: the attachment is added only into Odoo
                     _super(e);
                 }
             });
@@ -66,10 +66,10 @@
             // method called on click on "Add from Maarch..."
             var self = this;
 
-            instance.session.rpc('/tempo/maarchconnector/is_conf_active', {}).done(function (result) {
-                if(!result.is_conf_active)
+            instance.session.rpc('/tempo/maarchconnector/is_conf_activated', {}).done(function (result) {
+                if(!result.is_conf_activated)
                 {
-                    // if no configuration is active: display an error message
+                    // if no configuration is activated: display an error message
                     self.do_notify('Connecteur Maarch',
                                    'Erreur : aucun serveur Maarch n\'est activé.<br>' +
                                    'Veuillez choisir le serveur à utiliser via le menu "Connecteur Maarch".', true);
