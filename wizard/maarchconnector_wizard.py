@@ -119,3 +119,12 @@ class DocumentWizard(models.TransientModel):
     subject = fields.Char(string=u"objet")  # can be changed before recording
     doc_date = fields.Date(string=u"date", readonly=True)
     to_add = fields.Boolean(string=u"à ajouter", default=False)
+
+    @api.onchange('subject')
+    def _validate_subject_format(self):
+        """
+        Remove characters that can cause issues in filenames
+        """
+        invalid_characters = "<>:\"/\|?*"
+        if self.subject:
+            self.subject = ''.join(c for c in self.subject if c not in invalid_characters)
