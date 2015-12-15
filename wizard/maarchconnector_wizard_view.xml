@@ -7,22 +7,16 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
-                        <group col="12">
+                        <group>
                             <field name="filesubject"/>
-                        </group>
-                        <group col="6">
-                            <field name="min_date"/>
-                        </group>
-                        <group col="6">
                             <field name="category"/>
                         </group>
-                        <group col="6">
+                        <group>
+                            <field name="min_date"/>
                             <field name="contact_name"/>
                         </group>
-                        <group col="6">
-                            <button name="search_docs" type="object"
-                                    string="rechercher" class="oe_highlight"/>
-                        </group>
+                        <button name="search_docs" type="object"
+                            string="rechercher" class="oe_highlight"/>
                     </group>
                     <label for="document_ids"/>
                     <!-- the one2many widget makes the view looks like in a one2many case (columns are sortable...) -->
