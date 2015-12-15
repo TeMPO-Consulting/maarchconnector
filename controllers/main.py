@@ -7,6 +7,7 @@ import base64
 import simplejson
 from datetime import datetime
 from HTMLParser import HTMLParser
+import xml.sax
 import os
 
 
@@ -40,6 +41,14 @@ class MaarchBinary(Binary):
                         args = {'error': "La pièce jointe n'a pas été enregistrée dans Maarch ni dans Odoo.",
                                 'maarchError': True}
                         return out % (simplejson.dumps(callback), simplejson.dumps(args))
+                # seek to the end of the file
+                ufile.seek(0, os.SEEK_END)
+                # get the current position of the pointer within the file => size in bytes
+                size = ufile.tell()
+                ufile.seek(0)
+                if size > 20971520:  # 20 Mio
+                    raise Exception("Le fichier est trop volumineux.<br/>"
+                                    "Veuillez réduire sa taille avant de réessayer.")
                 # file extension without "."
                 extension = os.path.splitext(ufile.filename)[1].replace('.', '')
                 self._add_to_maarch(base64.encodestring(ufile.read()), self._filesubject_in_maarch, extension)
@@ -130,8 +139,13 @@ class MaarchBinary(Binary):
         if not extension:
             extension = 'pdf'
         # call to the web service method
-        maarch_client.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
-                                            'res_letterbox', extension, 'INIT')
+        try:
+            maarch_client.service.storeResource(base64_encoded_content, data, 'letterbox_coll',
+                                                'res_letterbox', extension, 'INIT')
+        except xml.sax.SAXParseException:
+            # if the file is "not well-formed". Also happens when the file is empty (0 byte)
+            raise Exception("Ce fichier n'a pas pu être pris en charge, "
+                            "car il est mal formé ou est vide (taille de 0 octets).")
 
 
 class MLStripper(HTMLParser):
