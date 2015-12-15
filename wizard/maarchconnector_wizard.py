@@ -13,6 +13,11 @@ class SearchWizard(models.TransientModel):
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     min_date = fields.Date(string=u"Daté à partir du", required=True,
                            default=datetime.now() - relativedelta(years=1))  # one year ago by default
+    category = fields.Selection([('incoming_mail', 'courrier départ'),
+                                 ('outgoing_mail', 'courrier arrivée'),
+                                 ('internal_mail', 'courrier interne')
+                                 ], string='Catégorie')
+    contact_name = fields.Char(string=u"Nom du contact")
     document_ids = fields.Many2many('maarch.document', string=u"Liste des documents")
 
     @api.multi

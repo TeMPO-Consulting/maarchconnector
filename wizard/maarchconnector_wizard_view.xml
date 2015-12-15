@@ -14,6 +14,12 @@
                             <field name="min_date"/>
                         </group>
                         <group col="6">
+                            <field name="category"/>
+                        </group>
+                        <group col="6">
+                            <field name="contact_name"/>
+                        </group>
+                        <group col="6">
                             <button name="search_docs" type="object"
                                     string="rechercher" class="oe_highlight"/>
                         </group>
