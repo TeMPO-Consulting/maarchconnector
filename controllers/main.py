@@ -19,8 +19,8 @@ class MaarchBinary(Binary):
     def upload_attachment(self, callback, model, id, ufile):
         """
         Override the method of the Binary class.
-        Check if the Maarch server configuration is OK and call the _add_to_maarch method.
-        Display an appropriate message if the document can't be added into Maarch.
+        Do the necessary checks and call the _add_to_maarch method.
+        Display an appropriate message if the document can't be added.
         :param callback
         :param model : model name
         :param id
@@ -107,7 +107,8 @@ class MaarchBinary(Binary):
 
     def _add_to_maarch(self, base64_encoded_content, document_subject, extension='pdf'):
         """
-        Add the file into Maarch under the name "document_subject"
+        Add the file into Maarch under the name "document_subject".
+        Raise an exception if the file is empty or not well-formed.
         :param base64_encoded_content: content of the file encoded in base 64
         :param document_subject: file name or subject
         :param extension: file extension without "."
