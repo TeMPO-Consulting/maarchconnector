@@ -28,7 +28,7 @@ class SearchWizard(models.TransientModel):
         """
         try:
             maarch_client = self.env['maarchconnector.configuration'].get_maarch_client()
-            param = maarch_client.factory.create('customizedSearchParams')
+            param = maarch_client.factory.create('searchDocumentsParams')
             param.subject = self.filesubject
             param.min_doc_date = self.min_date
             if self.category:
@@ -39,7 +39,7 @@ class SearchWizard(models.TransientModel):
                 param.contact = self.contact_name
             else:
                 param.contact = None
-            response = maarch_client.service.customizedSearchResources(param)
+            response = maarch_client.service.searchDocuments(param)
             self.document_ids = None  # empty the result list in case the wizard has been reloaded
             doclist = []
             if response:
