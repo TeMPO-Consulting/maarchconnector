@@ -29,6 +29,7 @@
                             <field name="subject"/>
                             <field name="doc_date"/>
                             <field name="category"/>
+                            <field name="contact"/>
                         </tree>
                     </field>
 

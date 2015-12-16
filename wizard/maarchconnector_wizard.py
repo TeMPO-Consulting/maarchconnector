@@ -35,6 +35,10 @@ class SearchWizard(models.TransientModel):
                 param.category = self.category
             else:
                 param.category = None  # otherwise the category would be evaluated as False
+            if self.contact_name:
+                param.contact = self.contact_name
+            else:
+                param.contact = None
             response = maarch_client.service.customizedSearchResources(param)
             self.document_ids = None  # empty the result list in case the wizard has been reloaded
             doclist = []
@@ -72,7 +76,11 @@ class SearchWizard(models.TransientModel):
         result.update({'maarch_id': doc.res_id})
         result.update({'subject': doc.subject.encode('utf8')})
         result.update({'doc_date': doc.doc_date})
-        result.update({'category': self._get_category_name(doc.category)})
+        result.update({'category': self._get_category_designation(doc.category)})
+        if doc.contact:
+            result.update({'contact': doc.contact})
+        else:
+            result.update({'contact': '-'})
         doclist.append(result)
 
     def _get_category_designation(self, short_name):
@@ -142,6 +150,7 @@ class DocumentWizard(models.TransientModel):
     subject = fields.Char(string=u"objet")  # can be changed before recording
     doc_date = fields.Date(string=u"date", readonly=True)
     category = fields.Char(string=u"catégorie", readonly=True)
+    contact = fields.Char(string=u"contact", readonly=True)
     to_add = fields.Boolean(string=u"à ajouter", default=False)
 
     @api.onchange('subject')
