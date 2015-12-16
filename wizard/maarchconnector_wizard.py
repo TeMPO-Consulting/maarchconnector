@@ -13,9 +13,9 @@ class SearchWizard(models.TransientModel):
     filesubject = fields.Char(string=u"Objet du document / courrier", required=True)
     min_date = fields.Date(string=u"Daté à partir du", required=True,
                            default=datetime.now() - relativedelta(years=1))  # one year ago by default
-    category = fields.Selection([('incoming_mail', 'courrier départ'),
-                                 ('outgoing_mail', 'courrier arrivée'),
-                                 ('internal_mail', 'courrier interne')
+    category = fields.Selection([('incoming', 'courrier arrivée'),
+                                 ('outgoing', 'courrier départ'),
+                                 ('internal', 'courrier interne')
                                  ], string='Catégorie')
     contact_name = fields.Char(string=u"Nom du contact")
     document_ids = fields.Many2many('maarch.document', string=u"Liste des documents")
@@ -31,6 +31,10 @@ class SearchWizard(models.TransientModel):
             param = maarch_client.factory.create('customizedSearchParams')
             param.subject = self.filesubject
             param.min_doc_date = self.min_date
+            if self.category:
+                param.category = self.category
+            else:
+                param.category = None  # otherwise the category would be evaluated as False
             response = maarch_client.service.customizedSearchResources(param)
             self.document_ids = None  # empty the result list in case the wizard has been reloaded
             doclist = []
@@ -68,7 +72,21 @@ class SearchWizard(models.TransientModel):
         result.update({'maarch_id': doc.res_id})
         result.update({'subject': doc.subject.encode('utf8')})
         result.update({'doc_date': doc.doc_date})
+        result.update({'category': self._get_category_name(doc.category)})
         doclist.append(result)
+
+    def _get_category_designation(self, short_name):
+        """
+        Give the category designation that matches the short name in parameter
+        :param short_name: the short category name
+        :return: the complete designation
+        """
+        switcher = {
+            'incoming': 'courrier arrivée',
+            'outgoing': 'courrier départ',
+            'internal': 'courrier interne',
+        }
+        return switcher.get(short_name, '-')
 
     @api.onchange('min_date')
     def _onchange_min_date(self):
@@ -123,6 +141,7 @@ class DocumentWizard(models.TransientModel):
     maarch_id = fields.Char(string=u"id", readonly=True)
     subject = fields.Char(string=u"objet")  # can be changed before recording
     doc_date = fields.Date(string=u"date", readonly=True)
+    category = fields.Char(string=u"catégorie", readonly=True)
     to_add = fields.Boolean(string=u"à ajouter", default=False)
 
     @api.onchange('subject')

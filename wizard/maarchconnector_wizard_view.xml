@@ -28,6 +28,7 @@
                             <field name="maarch_id" invisible="1"/>
                             <field name="subject"/>
                             <field name="doc_date"/>
+                            <field name="category"/>
                         </tree>
                     </field>
 
