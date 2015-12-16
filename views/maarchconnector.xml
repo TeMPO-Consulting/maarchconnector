@@ -8,17 +8,17 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group col="12">
-                            <field name="name" colspan="12"/>
-                            <field name="server_address" colspan="12"
+                        <group col="4">
+                            <field name="name" colspan="4"/>
+                            <field name="server_address" colspan="4"
                                    placeholder="exemples : http://www.monsite.com/maarch_entreprise/ ou http://102.34.56.78/maarch15"/>
-                        </group>
-                        <group col="12">
-                            <field name="maarch_user_login" colspan="6"/>
-                            <field name="maarch_user_password" password="True" colspan="6"/>
-                        </group>
-                        <group col="12">
-                            <field name="activated"/>
+
+                            <group colspan="4" col="4">
+                                <field name="maarch_user_login" />
+                                <field name="maarch_user_password" password="True" />
+                            </group>
+
+                            <field name="activated" colspan="4"/>
                         </group>
                     </sheet>
                 </form>
@@ -77,6 +77,5 @@
                   parent="main_maarchconnector_menu"/>
         <menuitem id="server_menu" name="Serveur Maarch" parent="configuration_menu"
                   action="configuration_list_action"/>
-
     </data>
 </openerp>
