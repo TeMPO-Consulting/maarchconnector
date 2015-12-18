@@ -4,6 +4,7 @@ from openerp import models, fields, api, exceptions
 from datetime import datetime
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from suds import TypeNotFound
 import re
 
 
@@ -23,7 +24,8 @@ class SearchWizard(models.TransientModel):
     @api.multi
     def search_docs(self):
         """
-        Display in the wizard the list of documents that match the criteria given by the user
+        Display in the wizard the list of documents that match the criteria given by the user.
+        Show a warning if the Maarch server isn't configured to use the search functionality.
         :return: a dictionary that corresponds to the wizard
         """
         try:
@@ -62,6 +64,10 @@ class SearchWizard(models.TransientModel):
                 'views': [(False, 'form')],
                 'target': 'new',
             }
+        except TypeNotFound:
+            # if the necessary changes haven't been done in the Maarch source code
+            raise exceptions.ValidationError("Le serveur Maarch utilisé n'est pas configuré "
+                                             "pour utiliser la recherche.")
         except Exception as e:
             # if a problem with the Maarch server occurs after the wizard has been displayed...
             raise exceptions.ValidationError(e.message)
