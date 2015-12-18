@@ -30,7 +30,7 @@ class resources_controler
                 . "WHERE UPPER(r.subject) LIKE UPPER(:subject) AND "
                 . "r.doc_date >= to_date(:mindocdate, 'YYYY-MM-DD') "
                 . "AND COALESCE(m.category_id, '') like :category "
-                . "ORDER BY r.doc_date ASC;";
+                . "ORDER BY r.doc_date DESC;";
         
 	/*********************
 	Note : in the version 1.5.1 the following lines must be adapted:
