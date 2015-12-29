@@ -19,7 +19,7 @@ class SearchWizard(models.TransientModel):
                                  ('internal', 'courrier interne')
                                  ], string='Catégorie')
     contact_name = fields.Char(string=u"Nom du contact")
-    document_ids = fields.Many2many('maarch.document', string=u"Liste des documents")
+    document_ids = fields.One2many('maarch.document', 'documentwizard_id', string=u"Liste des documents")
 
     @api.multi
     def search_docs(self):
@@ -152,6 +152,7 @@ class SearchWizard(models.TransientModel):
 class DocumentWizard(models.TransientModel):
     _name = 'maarch.document'
 
+    documentwizard_id = fields.Many2one('maarch.search', readonly=True)
     maarch_id = fields.Char(string=u"id", readonly=True)
     subject = fields.Char(string=u"objet")  # can be changed before recording
     doc_date = fields.Date(string=u"date", readonly=True)
