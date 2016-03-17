@@ -1,5 +1,7 @@
 {
-    'name': "Module d'interface avec Maarch",
+    'name': "TeMPO - Maarch Connector",
+    'author': 'Julie Nuguet @ TeMPO Consulting',
+    'version': '1.0',
     'depends': ['document'],
     'data': [
         'views/maarchconnector.xml',
