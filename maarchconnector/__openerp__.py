@@ -2,6 +2,7 @@
     'name': "TeMPO - Maarch Connector",
     'author': 'Julie Nuguet @ TeMPO Consulting',
     'version': '1.0',
+    'license': 'AGPL-3',
     'depends': ['document'],
     'data': [
         'views/maarchconnector.xml',

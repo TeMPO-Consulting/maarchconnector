@@ -1,5 +1,10 @@
 Odoo module - interface with Maarch
 
+## License
+This module is published under an AGPL v3 license, except for the code in the "misc" folder which is under the GPL v3 license.
+
+##Install
+The plugin was configured for Odoo v8.0 and Maarch 1.5.
 To make this module work with the 1.5 version of Maarch:
 
 1) the following code must be added into the Maarch source code:
